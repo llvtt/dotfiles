@@ -65,3 +65,12 @@
 (defun occur-all-buffers (arg)
   (interactive "sSearch for regex: ")
   (multi-occur-in-matching-buffers ".*" arg))
+
+(defun insert-object-id ()
+  (interactive)
+  (dotimes (_ 24)
+    (insert (format "%x" (random 16)))))
+
+;; Local Variables:
+;; eval: (flycheck-mode -1)
+;; End:

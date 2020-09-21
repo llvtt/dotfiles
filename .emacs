@@ -51,6 +51,14 @@
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
   :hook
   (ruby-mode python-mode web-mode js-mode)
+  :bind
+  (:map evil-normal-state-map
+	("gd" . dumb-jump-go)
+	)
+  )
+(use-package company
+  :config
+  (add-hook 'after-init-hook 'global-company-mode)
   )
 
 ;;;;;;;;
@@ -79,6 +87,7 @@
 	("<SPC>rpt" . projectile-rails-find-current-test)
 	)
   )
+(use-package ripgrep)
 (use-package rspec-mode
   :bind
   (:map evil-normal-state-map
@@ -107,6 +116,10 @@
 	("<SPC>rq" . ruby-toggle-string-quotes)
 	)
 
+  )
+(use-package ruby-end)
+(use-package rubocopfmt
+  :hook (ruby-mode . rubocopfmt-mode)
   )
 
 ;;;;;;;;;
