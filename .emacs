@@ -166,7 +166,7 @@
 ;; themes ;;
 ;;;;;;;;;;;;
 
-(load-theme 'abyssal-blue)
+(load-theme 'abyssal-blue t nil)
 
 ;;;;;;;;;;;;;;;;;
 ;; other files ;;
