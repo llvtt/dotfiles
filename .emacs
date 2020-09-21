@@ -20,6 +20,7 @@
 ;; general packages ;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
+(use-package magit)
 (use-package evil
   :init
   (setq
@@ -145,6 +146,8 @@
 (evil-global-set-key 'normal [mouse-5] '(lambda () (interactive) (scroll-up 1)))
 (evil-global-set-key 'normal ";" 'comment-line)
 
+(global-set-key (kbd "C-x C-k <RET>") 'kill-this-buffer)
+
 ;; aliases
 (defalias 'ttl 'toggle-truncate-lines)
 (defalias 'rr 'replace-rectangle)
@@ -163,7 +166,7 @@
 ;; themes ;;
 ;;;;;;;;;;;;
 
-(load-theme 'wombat)
+(load-theme 'abyssal-blue)
 
 ;;;;;;;;;;;;;;;;;
 ;; other files ;;
