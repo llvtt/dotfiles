@@ -107,18 +107,18 @@
   :config
   (add-hook 'ruby-mode-hook
 	    (lambda ()
-	      (setq-local flycheck-command-wrapper-function
-			  (lambda (command) (append '("bundle" "exec") command))))
+	      (setq flycheck-command-wrapper-function
+		    (lambda (command) (append '("bundle" "exec") command)))
+	      )
 	    )
   :bind
   (:map evil-normal-state-map
 	("<SPC>re" . ruby-toggle-block)
 	("<SPC>rq" . ruby-toggle-string-quotes)
 	)
-
   )
 (use-package ruby-end
-  :hook (ruby-mode)
+  :hook (ruby-mode . ruby-end-mode)
   )
 (use-package rubocopfmt
   :hook (ruby-mode . rubocopfmt-mode)

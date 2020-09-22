@@ -9,7 +9,7 @@
  '(global-company-mode t)
  '(package-selected-packages
    (quote
-    (rubocopfmt ripgrep ruby-end company yasnippet web-mode use-package rainbow-delimiters projectile-rails go-mode flycheck evil autopair)))
+    (ruby-end-mode rubocopfmt ripgrep ruby-end company yasnippet web-mode use-package rainbow-delimiters projectile-rails go-mode flycheck evil autopair)))
  '(projectile-mode t nil (projectile)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
