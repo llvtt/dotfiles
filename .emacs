@@ -117,7 +117,9 @@
 	)
 
   )
-(use-package ruby-end)
+(use-package ruby-end
+  :hook (ruby-mode)
+  )
 (use-package rubocopfmt
   :hook (ruby-mode . rubocopfmt-mode)
   )
@@ -145,6 +147,7 @@
 (show-paren-mode t)
 (global-hl-line-mode t)
 (electric-pair-mode t)
+(column-number-mode t)
 
 ;; ido
 (setq
