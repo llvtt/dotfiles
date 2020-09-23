@@ -4,8 +4,8 @@
 
 (require 'package)
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-			 ("marmalade" . "http://marmalade-repo.org/packages/")
-			 ("melpa" . "http://melpa.org/packages/")))
+                         ("marmalade" . "http://marmalade-repo.org/packages/")
+                         ("melpa" . "http://melpa.org/packages/")))
 (package-initialize)
 (unless package-archive-contents (package-refresh-contents))
 
@@ -53,8 +53,8 @@
   (ruby-mode python-mode web-mode js-mode)
   :bind
   (:map evil-normal-state-map
-	("gd" . dumb-jump-go)
-	)
+        ("gd" . dumb-jump-go)
+        )
   )
 (use-package company
   :config
@@ -77,45 +77,47 @@
 (use-package projectile
   :bind
   (:map evil-normal-state-map
-	("<SPC>rpf" . projectile-find-file)
-	)
+        ("<SPC>rpf" . projectile-find-file)
+        )
   )
 (use-package projectile-rails
   :bind
   (:map evil-normal-state-map
-	("<SPC>rpc" . projectile-rails-console)
-	("<SPC>rpt" . projectile-rails-find-current-test)
-	)
+        ("<SPC>rpc" . projectile-rails-console)
+        ("<SPC>rpt" . projectile-rails-find-current-test)
+        )
   )
-(use-package ripgrep)
+(use-package ripgrep
+  :bind
+  (:map evil-normal-state-map
+        ("<SPC>rpr" . projectile-ripgrep))
+  )
 (use-package rspec-mode
   :bind
   (:map evil-normal-state-map
-	("<SPC>rra" . rspec-verify)
-	("<SPC>rrs" . rspec-verify-single)
-	)
+        ("<SPC>rra" . rspec-verify)
+        ("<SPC>rrs" . rspec-verify-single)
+        )
   )
 (use-package minitest
   :bind
   (:map evil-normal-state-map
-	("<SPC>rma" . minitest-verify)
-	("<SPC>rms" . minitest-verify-single)
-	("<SPC>rmw" . minitest-verify-all)
-	)
+        ("<SPC>rma" . minitest-verify)
+        ("<SPC>rms" . minitest-verify-single)
+        ("<SPC>rmw" . minitest-verify-all)
+        )
   )
 (use-package ruby-mode
   :config
   (add-hook 'ruby-mode-hook
-	    (lambda ()
-	      (setq flycheck-command-wrapper-function
-		    (lambda (command) (append '("bundle" "exec") command)))
-	      )
-	    )
+            (lambda ()
+              (setq-local flycheck-command-wrapper-function
+                          (lambda (command) (append '("bundle" "exec") command)))))
   :bind
   (:map evil-normal-state-map
-	("<SPC>re" . ruby-toggle-block)
-	("<SPC>rq" . ruby-toggle-string-quotes)
-	)
+        ("<SPC>re" . ruby-toggle-block)
+        ("<SPC>rq" . ruby-toggle-string-quotes)
+        )
   )
 (use-package ruby-end
   :hook (ruby-mode . ruby-end-mode)
@@ -139,15 +141,18 @@
 (global-linum-mode t)
 (setq
  initial-scratch-message nil ; don't tell me how to use the scratch buffer
- ; emulate vi-style buffer scrolling
+                                        ; emulate vi-style buffer scrolling
  scroll-conservatively 1
  scroll-margin 20
+ ;; no tabs
+ indent-tabs-mode nil
  )
 (xterm-mouse-mode t)
 (show-paren-mode t)
 (global-hl-line-mode t)
 (electric-pair-mode t)
 (column-number-mode t)
+(fset 'yes-or-no-p 'y-or-n-p)
 
 ;; ido
 (setq
@@ -160,7 +165,8 @@
 (evil-global-set-key 'normal "gb" 'xref-pop-marker-stack)
 (evil-global-set-key 'normal [mouse-4] '(lambda () (interactive) (scroll-down 1)))
 (evil-global-set-key 'normal [mouse-5] '(lambda () (interactive) (scroll-up 1)))
-(evil-global-set-key 'normal ";" 'comment-line)
+(evil-global-set-key 'normal ";" 'comment-thing)
+(evil-global-set-key 'visual ";" 'comment-thing)
 
 (global-set-key (kbd "C-x C-k <RET>") 'kill-this-buffer)
 
@@ -198,3 +204,4 @@
 ;; Local Variables:
 ;; eval: (flycheck-mode -1)
 ;; End:
+(put 'narrow-to-region 'disabled nil)
