@@ -24,26 +24,25 @@
 (use-package evil
   :init
   (setq
-   ;; these need to be set for 'evil-collection to work properly
-   evil-want-integration t
-   evil-want-keybinding nil
-   )
-  :config
-  ;; must be activated after setting evil-want-* variables
-  (setq
    ;; make it easier to see paren matches
    evil-show-paren-range 1
    ;; don't add replaced text to the kill ring
    evil-kill-on-visual-paste nil
-   ;; use M-(number) for prefix argument instead and retain vim movement behavior
-   evil-want-C-u-scroll t
    ;; try to be more like OG emacs when dealing with yanking stuff in general
    evil-want-Y-yank-to-eol t
    evil-move-beyond-eol t
    ;; try to be more like emacs when dealing with window management
    evil-split-window-below t
    evil-vsplit-window-right t
+   ;; use M-(number) for prefix argument instead and retain vim movement behavior
+   evil-want-C-u-scroll t
+
+   ;; these need to be set for 'evil-collection to work properly
+   evil-want-integration t
+   evil-want-keybinding nil
    )
+  :config
+  ;; must be activated after setting evil-want-* variables
   (evil-mode t)
   )
 (use-package evil-collection
@@ -63,8 +62,9 @@
 (use-package dumb-jump
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
-  :hook
-  (ruby-mode python-mode web-mode js-mode)
+  :hook ((ruby-mode . dumb-jump-mode)
+	 (python-mode . dumb-jump-mode)
+	 (js-mode . dumb-jump-mode))
   :bind
   (:map evil-normal-state-map
         ("gd" . dumb-jump-go)
@@ -98,7 +98,16 @@
   :bind
   (:map evil-normal-state-map
         ("<SPC>rpc" . projectile-rails-console)
-        ("<SPC>rpt" . projectile-rails-find-current-test)
+        ("<SPC>rpt" . projectile-rails-find-test)
+        ("<SPC>rpT" . projectile-rails-find-current-test)
+        ("<SPC>rpn" . projectile-rails-find-controller)
+        ("<SPC>rpN" . projectile-rails-find-current-controller)
+        ("<SPC>rpM" . projectile-rails-find-current-model)
+        ("<SPC>rpm" . projectile-rails-find-model)
+        ("<SPC>rph" . projectile-rails-find-helper)
+        ("<SPC>rpH" . projectile-rails-find-current-helper)
+        ("<SPC>rpz" . projectile-rails-find-serializer)
+        ("<SPC>rpZ" . projectile-rails-find-current-serializer)
         )
   )
 (use-package ripgrep
