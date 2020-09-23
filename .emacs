@@ -11,7 +11,8 @@
 
 ;; core packages
 (let ((packages-list '(use-package)))
-  (dolist (package packages-list) (package-install package)))
+  (dolist (package packages-list)
+    (unless (package-installed-p package) (package-install package))))
 (require 'use-package)
 (require 'use-package-ensure)
 (setq use-package-always-ensure t)
