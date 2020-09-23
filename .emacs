@@ -30,6 +30,20 @@
    )
   :config
   ;; must be activated after setting evil-want-* variables
+  (setq
+   ;; make it easier to see paren matches
+   evil-show-paren-range 1
+   ;; don't add replaced text to the kill ring
+   evil-kill-on-visual-paste nil
+   ;; use M-(number) for prefix argument instead and retain vim movement behavior
+   evil-want-C-u-scroll t
+   ;; try to be more like OG emacs when dealing with yanking stuff in general
+   evil-want-Y-yank-to-eol t
+   evil-move-beyond-eol t
+   ;; try to be more like emacs when dealing with window management
+   evil-split-window-below t
+   evil-vsplit-window-right t
+   )
   (evil-mode t)
   )
 (use-package evil-collection
@@ -141,7 +155,7 @@
 (global-linum-mode t)
 (setq
  initial-scratch-message nil ; don't tell me how to use the scratch buffer
-                                        ; emulate vi-style buffer scrolling
+ ;; emulate vi-style buffer scrolling
  scroll-conservatively 1
  scroll-margin 20
  ;; no tabs
