@@ -146,6 +146,8 @@
         )
   )
 (use-package ruby-mode
+  :init
+  (setq ruby-insert-encoding-magic-comment nil)
   :config
   (add-hook 'ruby-mode-hook
             (lambda ()
@@ -221,6 +223,7 @@
 (defalias 'db 'diff-buffer-with-file)
 (defalias 'vtt 'visit-tags-table)
 (defalias 'vcrb 'vc-revert-buffer)
+(defalias 'msf 'magit-stage-file)
 
 ;;;;;;;;;;;;
 ;; themes ;;
