@@ -22,6 +22,45 @@
 ;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package magit)
+(use-package flycheck
+  :config
+  (global-flycheck-mode t)
+  )
+(use-package yasnippet)
+(use-package rainbow-delimiters)
+(use-package yasnippet
+  :init
+  (yas-global-mode t)
+  )
+(use-package dumb-jump
+  :config
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+  :hook ((ruby-mode . dumb-jump-mode)
+	 (python-mode . dumb-jump-mode)
+	 (js-mode . dumb-jump-mode))
+  :bind
+  (:map evil-normal-state-map
+        ("gd" . dumb-jump-go)
+        )
+  )
+(use-package company
+  :config
+  (add-hook 'after-init-hook 'global-company-mode)
+  )
+(use-package terraform-mode)
+(use-package protobuf-mode
+  :init
+  (add-hook 'protobuf-mode-hook
+	    (lambda ()
+	      (add-to-list 'flycheck-protoc-import-path
+			   (expand-file-name "definitions" (projectile-project-root)))
+	      ))
+  )
+
+;;;;;;;;;;
+;; evil ;;
+;;;;;;;;;;
+
 (use-package evil
   :init
   (setq
@@ -49,31 +88,6 @@
 (use-package evil-collection
   :init
   (evil-collection-init)
-  )
-(use-package flycheck
-  :config
-  (global-flycheck-mode t)
-  )
-(use-package yasnippet)
-(use-package rainbow-delimiters)
-(use-package yasnippet
-  :init
-  (yas-global-mode t)
-  )
-(use-package dumb-jump
-  :config
-  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
-  :hook ((ruby-mode . dumb-jump-mode)
-	 (python-mode . dumb-jump-mode)
-	 (js-mode . dumb-jump-mode))
-  :bind
-  (:map evil-normal-state-map
-        ("gd" . dumb-jump-go)
-        )
-  )
-(use-package company
-  :config
-  (add-hook 'after-init-hook 'global-company-mode)
   )
 
 ;;;;;;;;
