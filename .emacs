@@ -56,6 +56,7 @@
 			   (expand-file-name "definitions" (projectile-project-root)))
 	      ))
   )
+(use-package dockerfile-mode)
 
 ;;;;;;;;;;
 ;; evil ;;
@@ -86,8 +87,11 @@
   (evil-mode t)
   )
 (use-package evil-collection
-  :init
+  :after
+  evil
+  :config
   (evil-collection-init)
+  (add-to-list 'evil-collection-mode-list 'ripgrep)
   )
 
 ;;;;;;;;
@@ -157,6 +161,7 @@
   (:map evil-normal-state-map
         ("<SPC>re" . ruby-toggle-block)
         ("<SPC>rq" . ruby-toggle-string-quotes)
+	("<SPC>rpk" . inf-ruby-console-racksh)
         )
   )
 (use-package ruby-end
@@ -193,6 +198,8 @@
 (electric-pair-mode t)
 (column-number-mode t)
 (fset 'yes-or-no-p 'y-or-n-p)
+
+(put 'narrow-to-region 'disabled nil)
 
 ;; ido
 (setq
@@ -245,4 +252,3 @@
 ;; Local Variables:
 ;; eval: (flycheck-mode -1)
 ;; End:
-(put 'narrow-to-region 'disabled nil)

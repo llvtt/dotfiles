@@ -1,5 +1,5 @@
 (deftheme abyssal-blue
-  "Created 2020-09-22.")
+  "Created 2020-09-24.")
 
 (custom-theme-set-faces
  'abyssal-blue
@@ -35,7 +35,7 @@
  '(fringe ((((class color) (background light)) (:background "grey95")) (((class color) (background dark)) (:background "grey10")) (t (:background "gray"))))
  '(header-line ((default (:inherit (mode-line))) (((type tty)) (:underline (:color foreground-color :style line) :inverse-video nil)) (((class color grayscale) (background light)) (:box nil :foreground "grey20" :background "grey90")) (((class color grayscale) (background dark)) (:box nil :foreground "grey90" :background "grey20")) (((class mono) (background light)) (:underline (:color foreground-color :style line) :box nil :inverse-video nil :foreground "black" :background "white")) (((class mono) (background dark)) (:underline (:color foreground-color :style line) :box nil :inverse-video nil :foreground "white" :background "black"))))
  '(tooltip ((((class color)) (:inherit (variable-pitch) :foreground "black" :background "lightyellow")) (t (:inherit (variable-pitch)))))
- '(mode-line ((t (:background "#0a256b" :foreground "#1a5e9b" :box (:line-width -1 :style released-button)))))
+ '(mode-line ((t (:box (:line-width -1 :style released-button) :foreground "#1a5e9b" :background "#0a256b"))))
  '(mode-line-buffer-id ((t (:weight bold))))
  '(mode-line-emphasis ((t (:weight bold))))
  '(mode-line-highlight ((((class color) (min-colors 88)) (:box (:line-width 2 :color "grey40" :style released-button))) (t (:inherit (highlight)))))
@@ -47,6 +47,7 @@
  '(next-error ((t (:inherit (region)))))
  '(query-replace ((t (:inherit (isearch)))))
  '(diff-added ((t (:inherit diff-changed :background "#1e5b34"))))
- '(diff-removed ((t (:inherit diff-changed :background "#8b2252")))))
+ '(diff-removed ((t (:inherit diff-changed :background "#8b2252"))))
+ '(show-paren-match ((t (:background "#0a256b\"" :inverse-video t)))))
 
 (provide-theme 'abyssal-blue)
