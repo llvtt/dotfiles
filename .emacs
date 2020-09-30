@@ -57,6 +57,7 @@
 	      ))
   )
 (use-package dockerfile-mode)
+(use-package markdown-mode)
 
 ;;;;;;;;;;
 ;; evil ;;
@@ -82,6 +83,14 @@
    evil-want-integration t
    evil-want-keybinding nil
    )
+  :hook
+  ;; TODO - add keybindings for "backward"
+  ;; - abstract this somehow to a keymap?
+  (
+   (help-mode . (lambda () (evil-local-set-key 'normal (kbd "C-j") 'forward-button)))
+   (custom-new-theme-mode . (lambda () (evil-local-set-key 'normal (kbd "C-j") 'forward-button)))
+   (compilation-mode . (lambda () (evil-local-set-key 'normal (kbd "C-j") 'compilation-next-error)))
+   )
   :config
   ;; must be activated after setting evil-want-* variables
   (evil-mode t)
@@ -92,6 +101,10 @@
   :config
   (evil-collection-init)
   (add-to-list 'evil-collection-mode-list 'ripgrep)
+  )
+(use-package evil-surround
+  :config
+  (global-evil-surround-mode 1)
   )
 
 ;;;;;;;;
@@ -175,7 +188,11 @@
 ;; web ;;
 ;;;;;;;;;
 
-(use-package web-mode)
+(use-package web-mode
+  :init
+  (add-to-list 'auto-mode-alist '("//.jsx" . web-mode))
+  (add-to-list 'auto-mode-alist '("//.tsx" . web-mode))
+  )
 
 ;;;;;;;;;;;;
 ;; global ;;
