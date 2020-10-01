@@ -248,6 +248,7 @@
 (defalias 'vtt 'visit-tags-table)
 (defalias 'vcrb 'vc-revert-buffer)
 (defalias 'msf 'magit-stage-file)
+(defalias 'rack 'inf-ruby-console-racksh)
 
 ;;;;;;;;;;;;
 ;; themes ;;
