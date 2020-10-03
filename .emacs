@@ -21,6 +21,7 @@
 ;; general packages ;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
+(use-package yaml-mode)
 (use-package magit)
 (use-package flycheck
   :config
@@ -37,7 +38,9 @@
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
   :hook ((ruby-mode . dumb-jump-mode)
 	 (python-mode . dumb-jump-mode)
-	 (js-mode . dumb-jump-mode))
+	 (js-mode . dumb-jump-mode)
+	 (web-mode . dumb-jump-mode)
+	 )
   :bind
   (:map evil-normal-state-map
         ("gd" . dumb-jump-go)
@@ -190,8 +193,8 @@
 
 (use-package web-mode
   :init
-  (add-to-list 'auto-mode-alist '("//.jsx" . web-mode))
-  (add-to-list 'auto-mode-alist '("//.tsx" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.jsx" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.tsx" . web-mode))
   )
 
 ;;;;;;;;;;;;
@@ -231,6 +234,8 @@
 (evil-global-set-key 'normal [mouse-5] '(lambda () (interactive) (scroll-up 1)))
 (evil-global-set-key 'normal ";" 'comment-thing)
 (evil-global-set-key 'visual ";" 'comment-thing)
+;; this prevents accidentally switching to Emacs mode when attemptint to background the emacs client
+(evil-global-set-key 'normal (kbd "C-z") 'suspend-frame)
 
 (global-set-key (kbd "C-x C-k <RET>") 'kill-this-buffer)
 

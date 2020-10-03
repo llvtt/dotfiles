@@ -13,7 +13,7 @@
  '(ido-mode (quote both) nil (ido))
  '(package-selected-packages
    (quote
-    (markdown-mode evil-surround dockerfile-mode protobuf-mode terraform-mode terraform ruby-end-mode rubocopfmt ripgrep ruby-end company yasnippet web-mode use-package rainbow-delimiters projectile-rails go-mode flycheck evil autopair)))
+    (yaml-mode markdown-mode evil-surround dockerfile-mode protobuf-mode terraform-mode terraform ruby-end-mode rubocopfmt ripgrep ruby-end company yasnippet web-mode use-package rainbow-delimiters projectile-rails go-mode flycheck evil autopair)))
  '(projectile-mode t nil (projectile))
  '(show-paren-mode t)
  '(show-paren-style (quote expression)))
