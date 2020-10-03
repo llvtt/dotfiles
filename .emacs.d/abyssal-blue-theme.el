@@ -1,5 +1,5 @@
 (deftheme abyssal-blue
-  "Created 2020-09-24.")
+  "Created 2020-10-02.")
 
 (custom-theme-set-faces
  'abyssal-blue
@@ -27,7 +27,7 @@
  '(font-lock-regexp-grouping-construct ((t (:inherit (bold)))))
  '(font-lock-string-face ((t (:foreground "#daa520"))))
  '(font-lock-type-face ((t (:foreground "#1e90ff"))))
- '(font-lock-variable-name-face ((t (:foreground "#204e50"))))
+ '(font-lock-variable-name-face ((t (:foreground "#77bbdd"))))
  '(font-lock-warning-face ((t (:inherit (error)))))
  '(button ((t (:inherit (link)))))
  '(link ((((class color) (min-colors 88) (background light)) (:underline (:color foreground-color :style line) :foreground "RoyalBlue3")) (((class color) (background light)) (:underline (:color foreground-color :style line) :foreground "blue")) (((class color) (min-colors 88) (background dark)) (:underline (:color foreground-color :style line) :foreground "cyan1")) (((class color) (background dark)) (:underline (:color foreground-color :style line) :foreground "cyan")) (t (:inherit (underline)))))
