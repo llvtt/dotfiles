@@ -50,7 +50,10 @@
   :config
   (add-hook 'after-init-hook 'global-company-mode)
   )
-(use-package terraform-mode)
+(use-package terraform-mode
+  :config
+  (add-hook 'terraform-mode-hook 'terraform-format-on-save-mode)
+  )
 (use-package protobuf-mode
   :init
   (add-hook 'protobuf-mode-hook
@@ -61,6 +64,15 @@
   )
 (use-package dockerfile-mode)
 (use-package markdown-mode)
+(use-package git-link
+  :bind
+  (:map evil-normal-state-map
+        ("<SPC>gl" . git-link)
+        )
+  (:map evil-visual-state-map
+        ("<SPC>gl" . git-link)
+        )
+ )
 
 ;;;;;;;;;;
 ;; evil ;;
@@ -172,7 +184,11 @@
   (add-hook 'ruby-mode-hook
             (lambda ()
               (setq-local flycheck-command-wrapper-function
-                          (lambda (command) (append '("bundle" "exec") command)))))
+                          (lambda (command) (append '("bundle" "exec") command)))
+	      (let ((ruby-mode-pairs '((?| . ?|))))
+		(setq-local electric-pair-pairs (append electric-pair-pairs ruby-mode-pairs))
+		(setq-local electric-pair-text-pairs (append electric-pair-text-pairs ruby-mode-pairs)))
+	      ))
   :bind
   (:map evil-normal-state-map
         ("<SPC>re" . ruby-toggle-block)
@@ -234,10 +250,15 @@
 (evil-global-set-key 'normal [mouse-5] '(lambda () (interactive) (scroll-up 1)))
 (evil-global-set-key 'normal ";" 'comment-thing)
 (evil-global-set-key 'visual ";" 'comment-thing)
+(evil-global-set-key 'normal "gz" '(lambda () (interactive) (my-increment-number-decimal -1)))
+(evil-global-set-key 'normal "ga" 'my-increment-number-decimal)
 ;; this prevents accidentally switching to Emacs mode when attemptint to background the emacs client
 (evil-global-set-key 'normal (kbd "C-z") 'suspend-frame)
+(evil-define-key 'emacs 'global (kbd "<escape>") 'evil-normal-state)
 
 (global-set-key (kbd "C-x C-k <RET>") 'kill-this-buffer)
+(global-set-key (kbd "M-s M-o") 'occur-all-buffers)
+(global-set-key (kbd "C-x p") '(lambda () (interactive) (other-window -1)))
 
 ;; aliases
 (defalias 'ttl 'toggle-truncate-lines)
@@ -275,3 +296,4 @@
 ;; Local Variables:
 ;; eval: (flycheck-mode -1)
 ;; End:
+(put 'downcase-region 'disabled nil)

@@ -11,9 +11,11 @@
  '(ido-enable-flex-matching t)
  '(ido-everywhere t)
  '(ido-mode (quote both) nil (ido))
+ '(indent-tabs-mode nil)
+ '(js-indent-level 2)
  '(package-selected-packages
    (quote
-    (yaml-mode markdown-mode evil-surround dockerfile-mode protobuf-mode terraform-mode terraform ruby-end-mode rubocopfmt ripgrep ruby-end company yasnippet web-mode use-package rainbow-delimiters projectile-rails go-mode flycheck evil autopair)))
+    (git-link yaml-mode markdown-mode evil-surround dockerfile-mode protobuf-mode terraform-mode terraform ruby-end-mode rubocopfmt ripgrep ruby-end company yasnippet web-mode use-package rainbow-delimiters projectile-rails go-mode flycheck evil autopair)))
  '(projectile-mode t nil (projectile))
  '(show-paren-mode t)
  '(show-paren-style (quote expression)))
