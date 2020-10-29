@@ -21,6 +21,7 @@
 ;; general packages ;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
+(use-package eglot)
 (use-package yaml-mode)
 (use-package magit)
 (use-package flycheck
@@ -73,6 +74,20 @@
         ("<SPC>gl" . git-link)
         )
  )
+
+;;;;;;;;;;
+;; rust ;;
+;;;;;;;;;;
+
+(use-package rust-mode
+  :config
+  (add-hook 'rust-mode-hook
+            (lambda() (setq
+                       rust-format-on-save t
+                       flycheck-checker 'rust-clippy
+                       ))
+            ))
+(use-package cargo)
 
 ;;;;;;;;;;
 ;; evil ;;
@@ -227,6 +242,9 @@
  scroll-margin 20
  ;; no tabs
  indent-tabs-mode nil
+ ;; put all backups somewhere in /tmp
+ backup-directory-alist `((".*" . ,temporary-file-directory))
+ auto-save-file-name-transforms `((".*" ,temporary-file-directory t))
  )
 (xterm-mouse-mode t)
 (show-paren-mode t)
@@ -259,6 +277,7 @@
 (global-set-key (kbd "C-x C-k <RET>") 'kill-this-buffer)
 (global-set-key (kbd "M-s M-o") 'occur-all-buffers)
 (global-set-key (kbd "C-x p") '(lambda () (interactive) (other-window -1)))
+(global-set-key (kbd "C-x 4 t") 'toggle-window-split)
 
 ;; aliases
 (defalias 'ttl 'toggle-truncate-lines)
