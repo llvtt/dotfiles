@@ -28,6 +28,7 @@
   :config
   (global-flycheck-mode t)
   )
+(use-package string-inflection)
 (use-package yasnippet)
 (use-package rainbow-delimiters)
 (use-package yasnippet
@@ -143,6 +144,7 @@
 
 (use-package go-mode
   :config
+  (setq gofmt-command "goimports")
   (add-hook 'before-save-hook 'gofmt-before-save)
   )
 
@@ -191,6 +193,12 @@
         ("<SPC>rms" . minitest-verify-single)
         ("<SPC>rmw" . minitest-verify-all)
         )
+  :config
+  (add-hook 'minitest-compilation-mode-hook
+            '(lambda ()
+               (set (make-local-variable 'compilation-error-regexp-alist-alist)
+                    (list (quote ('ruby-Test::Unit "^ *\\([^ (].*\\):\\([1-9][0-9]*\\):in " 1 2)))))
+            )
   )
 (use-package ruby-mode
   :init
