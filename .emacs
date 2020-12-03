@@ -194,11 +194,6 @@
         ("<SPC>rmw" . minitest-verify-all)
         )
   :config
-  (add-hook 'minitest-compilation-mode-hook
-            '(lambda ()
-               (set (make-local-variable 'compilation-error-regexp-alist-alist)
-                    (list (quote ('ruby-Test::Unit "^ *\\([^ (].*\\):\\([1-9][0-9]*\\):in " 1 2)))))
-            )
   )
 (use-package ruby-mode
   :init
@@ -208,9 +203,13 @@
             (lambda ()
               (setq-local flycheck-command-wrapper-function
                           (lambda (command) (append '("bundle" "exec") command)))
+
 	      (let ((ruby-mode-pairs '((?| . ?|))))
 		(setq-local electric-pair-pairs (append electric-pair-pairs ruby-mode-pairs))
 		(setq-local electric-pair-text-pairs (append electric-pair-text-pairs ruby-mode-pairs)))
+
+               (set (make-local-variable 'compilation-error-regexp-alist-alist)
+                    (list (quote ('ruby-Test::Unit "^ *\\([^ (].*\\):\\([1-9][0-9]*\\):in " 1 2))))
 	      ))
   :bind
   (:map evil-normal-state-map
@@ -259,6 +258,7 @@
 (global-hl-line-mode t)
 (electric-pair-mode t)
 (column-number-mode t)
+
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (put 'narrow-to-region 'disabled nil)
