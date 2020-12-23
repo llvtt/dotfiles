@@ -13,7 +13,8 @@
  '(indent-tabs-mode nil)
  '(js-indent-level 2)
  '(package-selected-packages
-   '(string-inflection protobuf-mode cargo eglot rust-mode git-link yaml-mode markdown-mode evil-surround dockerfile-mode terraform-mode terraform ruby-end-mode rubocopfmt ripgrep ruby-end company yasnippet web-mode use-package rainbow-delimiters projectile-rails go-mode flycheck evil autopair))
+   (quote
+    (tide string-inflection protobuf-mode cargo eglot rust-mode git-link yaml-mode markdown-mode evil-surround dockerfile-mode terraform-mode terraform ruby-end-mode rubocopfmt ripgrep ruby-end company yasnippet web-mode use-package rainbow-delimiters projectile-rails go-mode flycheck evil autopair)))
  '(projectile-mode t nil (projectile))
  '(show-paren-mode t)
  '(show-paren-style 'expression))

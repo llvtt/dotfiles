@@ -234,6 +234,13 @@
   (add-to-list 'auto-mode-alist '("\\.jsx" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.tsx" . web-mode))
   )
+(use-package tide
+  :after
+  (typescript-mode company flycheck)
+  :hook
+  ((web-mode . tide-setup)
+   (before-save . tide-format-before-save))
+  )
 
 ;;;;;;;;;;;;
 ;; global ;;
