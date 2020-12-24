@@ -233,13 +233,32 @@
   :init
   (add-to-list 'auto-mode-alist '("\\.jsx" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.tsx" . web-mode))
+  :config
+  (setq
+   web-mode-enable-auto-pairing t
+   web-mode-enable-auto-expanding t
+   web-mode-enable-auto-opening t
+   web-mode-enable-auto-closing t
+   web-mode-enable-auto-indentation t
+   )
+  :bind
+  (:map evil-normal-state-map
+        ("<SPC>wer" . web-mode-element-rename)
+        ("<SPC>wek" . web-mode-element-kill)
+        )
   )
 (use-package tide
   :after
   (typescript-mode company flycheck)
   :hook
-  ((web-mode . tide-setup)
-   (before-save . tide-format-before-save))
+  (
+   (web-mode . tide-setup)
+   (before-save . tide-format-before-save)
+   )
+  :bind
+  (:map evil-normal-state-map
+        ("<SPC>tf" . tide-fix)
+        )
   )
 
 ;;;;;;;;;;;;
