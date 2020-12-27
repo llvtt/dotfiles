@@ -251,10 +251,12 @@
   (interactive)
   (when (buffer-modified-p) (save-buffer))
   (let* ((eslint (flycheck-node_modules-executable-find "eslint")))
-    (unless eslint
-      (error "Executable ‘%s’ not found" eslint))
-    (apply #'call-process eslint nil "*ESLint Errors*" nil (list "--fix" (buffer-file-name)))
-    (revert-buffer t t t)))
+    (if eslint
+        (progn
+          (apply #'call-process eslint nil "*ESLint Errors*" nil (list "--fix" (buffer-file-name)))
+          (revert-buffer t t t))
+      (message (format "eslint executable ‘%s’ not found" (or "" eslint))))
+    ))
 
 (use-package web-mode
   :init
@@ -271,7 +273,7 @@
    web-mode-enable-auto-indentation t
    )
   (add-hook 'web-mode-hook 'my-node_modules-flycheck-hook)
-  (add-hook 'web-mode-hook (lambda() (add-hook 'after-save-hook 'eslint-fix-file)))
+  (add-hook 'web-mode-hook (lambda() (add-hook 'after-save-hook 'eslint-fix-file nil t)))
   :bind
   (:map evil-normal-state-map
         ("<SPC>wer" . web-mode-element-rename)
