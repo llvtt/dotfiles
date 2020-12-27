@@ -252,7 +252,7 @@
   (when (buffer-modified-p) (save-buffer))
   (let* ((eslint (flycheck-node_modules-executable-find "eslint")))
     (unless eslint
-      (error "Executable ‘%s’ not found" eslint-fix-executable))
+      (error "Executable ‘%s’ not found" eslint))
     (apply #'call-process eslint nil "*ESLint Errors*" nil (list "--fix" (buffer-file-name)))
     (revert-buffer t t t)))
 
