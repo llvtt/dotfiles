@@ -340,6 +340,7 @@
 ;; this prevents accidentally switching to Emacs mode when attemptint to background the emacs client
 (evil-global-set-key 'normal (kbd "C-z") 'suspend-frame)
 (evil-global-set-key 'insert (kbd "C-z") 'suspend-frame)
+(evil-global-set-key 'visual (kbd "C-z") 'suspend-frame)
 (evil-define-key 'emacs 'global (kbd "<escape>") 'evil-normal-state)
 
 (global-set-key (kbd "C-x C-k <RET>") 'kill-this-buffer)
