@@ -229,11 +229,40 @@
 ;; web ;;
 ;;;;;;;;;
 
+;; https://github.com/flycheck/flycheck/issues/1428#issuecomment-591320954
+(defun flycheck-node_modules-executable-find (executable)
+  "Find npx binary in node_modules or globally for use with flycheck"
+  (or
+   (let* ((base (locate-dominating-file buffer-file-name "node_modules"))
+          (cmd  (if base (expand-file-name (concat "node_modules/.bin/" executable)  base))))
+     (if (and cmd (file-exists-p cmd))
+         cmd))
+   (flycheck-default-executable-find executable)))
+
+(defun my-node_modules-flycheck-hook ()
+  "Hook to help flycheck find node executables"
+  (setq-local flycheck-executable-find #'flycheck-node_modules-executable-find))
+
+;; Based on:
+;; - https://gist.github.com/blue0513/f503c26bf5cb8a1b6fb6e75f1ec91557
+;; - https://github.com/codesuki/eslint-fix/blob/master/eslint-fix.el
+(defun eslint-fix-file ()
+  "Run eslint --fix on the current file"
+  (interactive)
+  (when (buffer-modified-p) (save-buffer))
+  (let* ((eslint (flycheck-node_modules-executable-find "eslint")))
+    (unless eslint
+      (error "Executable ‘%s’ not found" eslint-fix-executable))
+    (apply #'call-process eslint nil "*ESLint Errors*" nil (list "--fix" (buffer-file-name)))
+    (revert-buffer t t t)))
+
 (use-package web-mode
   :init
   (add-to-list 'auto-mode-alist '("\\.jsx" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.tsx" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.ts" . web-mode))
   :config
+  (flycheck-add-mode 'javascript-eslint 'web-mode)
   (setq
    web-mode-enable-auto-pairing t
    web-mode-enable-auto-expanding t
@@ -241,6 +270,8 @@
    web-mode-enable-auto-closing t
    web-mode-enable-auto-indentation t
    )
+  (add-hook 'web-mode-hook 'my-node_modules-flycheck-hook)
+  (add-hook 'web-mode-hook (lambda() (add-hook 'after-save-hook 'eslint-fix-file)))
   :bind
   (:map evil-normal-state-map
         ("<SPC>wer" . web-mode-element-rename)
