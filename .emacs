@@ -21,7 +21,14 @@
 ;; general packages ;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package eglot)
+(use-package eglot
+  :bind
+  (:map evil-normal-state-map
+        ("<SPC>lr" . eglot-rename)
+        ("<SPC>ll" . eglot-reconnect)
+        ("<SPC>la" . eglot-code-actions)
+        )
+  )
 (use-package yaml-mode)
 (use-package magit)
 (use-package flycheck
@@ -43,10 +50,6 @@
 	 (js-mode . dumb-jump-mode)
 	 (web-mode . dumb-jump-mode)
 	 )
-  :bind
-  (:map evil-normal-state-map
-        ("gd" . dumb-jump-go)
-        )
   )
 (use-package company
   :config
@@ -300,7 +303,7 @@
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
-(global-linum-mode t)
+(global-display-line-numbers-mode)
 (setq
  initial-scratch-message nil ; don't tell me how to use the scratch buffer
  ;; emulate vi-style buffer scrolling
@@ -311,6 +314,8 @@
  ;; put all backups somewhere in /tmp
  backup-directory-alist `((".*" . ,temporary-file-directory))
  auto-save-file-name-transforms `((".*" ,temporary-file-directory t))
+ ;; eldoc
+ eldoc-echo-area-prefer-doc-buffer t
  )
 (xterm-mouse-mode t)
 (show-paren-mode t)
@@ -329,8 +334,16 @@
  )
 (ido-mode t)
 
-;; key bindings
+
+;; xref
 (evil-global-set-key 'normal "gb" 'xref-pop-marker-stack)
+(evil-global-set-key 'normal "gd" 'xref-find-definitions)
+(evil-global-set-key 'normal "gr" 'xref-find-references)
+
+;; global hooks
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+;; key bindings
 (evil-global-set-key 'normal [mouse-4] '(lambda () (interactive) (scroll-down 1)))
 (evil-global-set-key 'normal [mouse-5] '(lambda () (interactive) (scroll-up 1)))
 (evil-global-set-key 'normal ";" 'comment-thing)
