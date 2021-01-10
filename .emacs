@@ -22,6 +22,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package eglot
+  :config
+  (add-to-list 'eglot-server-programs '(web-mode . ("typescript-language-server" "--stdio")))
   :bind
   (:map evil-normal-state-map
         ("<SPC>lr" . eglot-rename)
