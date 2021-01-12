@@ -1,0 +1,60 @@
+# -*- mode: sh -*-
+
+############################
+# Standard shell variables #
+############################
+export TERM=xterm-256color
+export EDITOR="env TERM=xterm-24bit emacsclient -c -nw"
+export BROWSER="/Applications/Firefox.app/Contents/MacOS/firefox"
+export VISUAL="$EDITOR"
+export PAGER="less"
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LESS="-X -r"
+export GREP_OPTIONS="--color=auto"
+
+ulimit -n 1024
+
+###################
+# Personal quirks #
+###################
+export PYTHONPATH="$PYTHONPATH:$HOME/local/python"
+export WINEPREFIX="${HOME}/.wine"
+export PGDATA='/data/postgres'
+# Uncomment this line to use us-west-1 for AWS:
+#export EC2_URL="https://ec2.us-west-1.amazonaws.com"
+# Uncomment this line to use us-east-1 for AWS:
+export EC2_URL="https://ec2.amazonaws.com"
+
+##############
+# Work stuff #
+##############
+export SLACK_DEVELOPER_MENU=TRUE
+export CHEF_USER=llovett
+# Do not compress assets in raise-ror-webapp.
+export RAILS_ASSET_DEBUG=true
+
+# Get evaluation data tests to run locally.  Enabling this results in
+# our tests assuming that we are not running the webpack dev server:
+# export CI=true
+export CIRCLE_BRANCH=develop
+export RACK_ENV=development
+export RAILS_ENV=development
+
+########
+# PATH #
+########
+export CDPATH="$CDPATH:$HOME/code"
+PATH="$HOME/local/bin:$PATH"
+# Add rbenv shims to the path.
+PATH="$HOME/.rbenv/shims:$PATH"
+# Add nodenv shims to the path.
+PATH="$HOME/.nodenv/shims:$PATH"
+# Add skim utilities to PATH.
+PATH="$PATH:/Applications/Skim.app/Contents/SharedSupport"
+# goenv
+export GOENV_ROOT="$HOME/.goenv"
+export PATH="$GOENV_ROOT/bin:$PATH"
+eval "$(goenv init -)"
+export PATH="$GOROOT/bin:$PATH"
+export PATH="$PATH:$GOPATH/bin"
