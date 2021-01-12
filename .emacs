@@ -151,6 +151,8 @@
   :config
   (setq gofmt-command "goimports")
   (add-hook 'before-save-hook 'gofmt-before-save)
+  (add-hook 'go-mode-hook
+            (lambda () (evil-define-key 'normal 'go-mode-map "gd" 'xref-find-definitions)))
   )
 
 ;;;;;;;;;;
