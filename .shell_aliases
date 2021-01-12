@@ -1,0 +1,196 @@
+# -*- mode: sh -*-
+
+function psargs() {
+    ps -eo pid,command | grep $1 | grep -v 'grep '
+}
+
+# cd aliases
+alias ccd=cd
+alias cdc=cd
+alias dc=cd
+# /cd aliases
+alias cd-="cd -"
+alias co-="co -"
+alias sk="bundle exec sidekiq -e development_automated"
+alias lsadmin="aws s3 ls --recursive s3://raise-admin-portal-dev/"
+alias bi="bundle install"
+alias be="bundle exec"
+alias cci="circleci"
+alias bb="git_recent"
+alias gp="git push"
+alias grc="git rebase --continue"
+alias nocache="rake tmp:cache:clear"
+alias git="hub"
+alias gbl="git branch -l"
+alias cdapp="cd ~/code/raise-ror-webapp"
+alias new="ls -lt | head -n 5"
+alias diskhog="ls -A | sed 's/ /\\\\ /g' | xargs du -s | sort -n | cut -f2 | xargs du -sh"
+alias ls="ls -G"
+alias ..="cd .."
+alias cdgb="cd $GOPATH/bin"
+alias ll="ls -l"
+alias lla="ls -al"
+alias figrep="fgrep -i"
+alias mongop="psargs mongod ; psargs mongos"
+alias pythonp="psargs python"
+alias lastcom="git log --pretty=oneline -1"
+alias stash="git stash"
+alias gm="git merge"
+alias pull="git pull upstream develop"
+alias pjson="python -m json.tool"
+alias unpip="rm -rf *.egg-info; pip freeze | xargs pip uninstall -y"
+alias piphere="pip install -e ."
+alias pf="pip freeze"
+alias findn="find . -name "
+alias findin="find . -iname "
+alias tags='ctags -e -R --languages=ruby --exclude=.git'
+alias co="git checkout"
+alias gd="git diff"
+alias gl="git log"
+alias glp="git log -p"
+alias gs="git status"
+alias gdn="git diff --name-only"
+alias gcp="git cherry-pick"
+alias gb="git branch"
+alias gbb="git for-each-ref --sort=-committerdate --count=10 --format='%(refname:short)' refs/heads/"
+alias gcam="git commit -a -m"
+alias gcm="git commit -m"
+alias gca="git commit -a"
+alias gri="git rebase -i"
+alias ungit="git reset --hard HEAD"
+alias gpum="git pull --rebase upstream master"
+alias gpud="git pull --rebase upstream develop"
+alias gsl="git stash list"
+alias gsp="git show -p"
+alias testall="python -m unittest discover -v"
+alias ip="ipython"
+alias top=htop
+alias unit="python -m unittest -v"
+alias style="./gradlew findbugsMain findbugsTest checkstyleMain checkstyleTest"
+alias gtest="./gradlew clean jar testsJar test"
+alias mo='mongo-orchestration'
+alias govet="go tool vet"
+alias gdd="git diff \`git merge-base upstream/develop HEAD\`"
+alias gddn="git diff \`git merge-base upstream/develop HEAD\` --name-only"
+alias pop="git stash pop"
+alias amend="git commit --amend"
+
+alias mogno="mongo"
+alias mognop="mongop"
+alias mognod="mongod"
+alias mognos="mongos"
+alias jbos="jobs"
+alias j="jobs"
+alias emasc="emacs"
+alias e="env TERM=xterm-24bit emacsclient -c -nw"
+alias unmongo="killall mongod mongos"
+
+alias post="curl -i -XPOST"
+alias delete="curl -i -XDELETE"
+alias get="curl -i -XGET"
+alias put="curl -i -XPUT"
+
+alias iso8601="date +%Y-%m-%dT%H:%M:%S"
+
+alias creds="env | fgrep AWS | sed 's/^/export /' | pbcopy"
+alias nodock="docker-compose rm -sf"
+
+# Current projects
+alias pluto="bundle exec rackup -p 4000"
+
+function ec2ssh() {
+    ip=`aws ec2 describe-instances --instance-id $1 --query 'Reservations[].Instances[].PrivateIpAddress' --output text`
+    #ssh-keygen -R $ip 2>/dev/null
+    ssh -o StrictHostKeyChecking=no llovett@$ip
+}
+
+function ldir() {
+    LDIR="."
+    if [ $# -eq 1 ]; then
+        LDIR="$1"
+    fi
+    ls -l "$LDIR" | grep '^d'
+}
+
+function ediff() {
+    if [ "X${2}" = "X" ]; then
+        echo "USAGE: ediff <FILE 1> <FILE 2>"
+    else
+        emacs --eval "(ediff-files \"$1\" \"$2\")"
+    fi
+}
+
+function rot() {
+    while [ $# -gt 0 ]; do
+        mv $1 "$1.`date +%Y.%m.%d.%H.%M.%S`"
+        shift
+    done
+}
+
+function squash() {
+    git rebase -i $(git merge-base ${1:-upstream/develop} HEAD)
+}
+
+function l2g() {
+    echo $(($1 * 0.264172))
+}
+
+function kg2lb() {
+    echo $(($1 * 2.20462))
+}
+
+function gss() {
+    arg=${1:-'stash@{0}'}
+    git stash show -p $arg
+}
+
+function clean() {
+    find . -name "*#" -o -name "#*" | xargs rm -f
+    find . -name '.swp_emacs' -type d | xargs rm -rf
+}
+
+function noq() {
+    mongo <<EOF
+    use raise
+    db.queued_jobs.remove({});
+EOF
+    redis-cli flushdb
+}
+
+# Colorize man pages.
+# From the article http://boredzo.org/blog/archives/2016-08-15/colorized-man-pages-understood-and-customized
+man() {
+    env \
+        LESS_TERMCAP_mb=$(printf "\e[1;31m") \
+        LESS_TERMCAP_md=$(printf "\e[1;31m") \
+        LESS_TERMCAP_me=$(printf "\e[0m") \
+        LESS_TERMCAP_se=$(printf "\e[0m") \
+        LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
+        LESS_TERMCAP_ue=$(printf "\e[0m") \
+        LESS_TERMCAP_us=$(printf "\e[1;32m") \
+            man "$@"
+}
+
+function mr() {
+    ssh llovett@`aws ec2 describe-instances --filter Name=tag:aws:autoscaling:groupName,Values=production-migration-runner | fgrep PrivateIpAddress | head -n 1 | grep --color=never -o '\(\d\+\.\)\{3\}\d\+'` "$*"
+}
+
+function mrcp() {
+    scp $1 llovett@`aws ec2 describe-instances --filter Name=tag:aws:autoscaling:groupName,Values=production-migration-runner | fgrep PrivateIpAddress | head -n 1 | grep --color=never -o '\(\d\+\.\)\{3\}\d\+'`:~/
+}
+
+function smrcp() {
+    scp $1 llovett@`aws ec2 describe-instances --filter Name=tag:aws:autoscaling:groupName,Values=stag-migration-runner | fgrep PrivateIpAddress | head -n 1 | grep --color=never -o '\(\d\+\.\)\{3\}\d\+'`:~/
+}
+
+function smr() {
+    ssh llovett@`aws ec2 describe-instances --filter Name=tag:aws:autoscaling:groupName,Values=stag-migration-runner | fgrep PrivateIpAddress | head -n 1 | grep --color=never -o '\(\d\+\.\)\{3\}\d\+'` "$*"
+}
+
+function cob() {
+    git checkout -b $1 ${2:-upstream/develop}
+}
+
+function bu() {
+    bundle update ${1:-raise-protobuf}
+}
