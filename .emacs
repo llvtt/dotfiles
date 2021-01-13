@@ -3,6 +3,7 @@
 ;;;;;;;;;;;;;;;;;;;
 
 (require 'package)
+
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
                          ("marmalade" . "http://marmalade-repo.org/packages/")
                          ("melpa" . "http://melpa.org/packages/")))
@@ -307,7 +308,6 @@
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
-(global-display-line-numbers-mode)
 (setq
  initial-scratch-message nil ; don't tell me how to use the scratch buffer
  ;; emulate vi-style buffer scrolling
@@ -338,6 +338,11 @@
  )
 (ido-mode t)
 
+;; line numbers
+(global-display-line-numbers-mode)
+(setq
+ display-line-numbers-grow-only t
+ )
 
 ;; xref
 (evil-global-set-key 'normal "gb" 'xref-pop-marker-stack)
