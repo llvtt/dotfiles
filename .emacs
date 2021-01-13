@@ -385,7 +385,7 @@
 ;; themes ;;
 ;;;;;;;;;;;;
 
-(load-theme 'abyssal-blue t nil)
+(load "~/.emacs.d/current-theme.el" t)
 
 ;;;;;;;;;;;;;;;;;
 ;; other files ;;
