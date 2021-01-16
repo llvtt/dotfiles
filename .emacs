@@ -1,3 +1,8 @@
+;; Load customizations first to prevent errors about unsafe custom
+;; themes loaded in the rest of this file, for example.
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file 'noerror)
+
 ;;;;;;;;;;;;;;;;;;;
 ;; package setup ;;
 ;;;;;;;;;;;;;;;;;;;
@@ -22,9 +27,29 @@
 ;; general packages ;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
+(use-package undo-tree
+  :config
+  (global-undo-tree-mode)
+  )
+
+(use-package smart-mode-line
+  :init
+  (setq sml/theme 'respectful)
+  (sml/setup)
+  :config
+  (setq
+   sml/mule-info nil
+   sml/vc-mode-show-backend nil
+   sml/modified-char "δ"
+   ;; sml/fill-char nil
+   sml/shorten-directory nil
+   )
+  )
+
+
 (use-package eglot
   :config
-  (add-to-list 'eglot-server-programs '(web-mode . ("typescript-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs '(web-mode . ("npx" "typescript-language-server" "--stdio")))
   :bind
   (:map evil-normal-state-map
         ("<SPC>lr" . eglot-rename)
@@ -119,7 +144,10 @@
    ;; these need to be set for 'evil-collection to work properly
    evil-want-integration t
    evil-want-keybinding nil
+
+   evil-undo-system 'undo-tree
    )
+
   :hook
   ;; TODO - add keybindings for "backward"
   ;; - abstract this somehow to a keymap?
@@ -193,6 +221,10 @@
         ("<SPC>rra" . rspec-verify)
         ("<SPC>rrs" . rspec-verify-single)
         )
+  :config
+  (setq
+   rspec-allow-multiple-compilation-buffers t)
+  (rspec-install-snippets)
   )
 (use-package minitest
   :bind
@@ -231,6 +263,8 @@
   )
 (use-package rubocopfmt
   :hook (ruby-mode . rubocopfmt-mode)
+  :config
+  (add-to-list 'rubocopfmt-disabled-cops "Rails/TimeZone")
   )
 
 ;;;;;;;;;
@@ -342,6 +376,8 @@
 (global-display-line-numbers-mode)
 (setq
  display-line-numbers-grow-only t
+ display-line-numbers-major-tick 10
+ display-line-numbers-minor-tick 2
  )
 
 ;; xref
@@ -371,6 +407,7 @@
 (global-set-key (kbd "C-x 4 t") 'toggle-window-split)
 
 ;; aliases
+(defalias 'css 'custom-theme-visit-theme)
 (defalias 'ttl 'toggle-truncate-lines)
 (defalias 'rr 'replace-rectangle)
 (defalias 'kr 'kill-rectangle)
@@ -396,10 +433,6 @@
 ;; other files ;;
 ;;;;;;;;;;;;;;;;;
 
-;; put *Customize* generated code in its own file
-(setq custom-file "~/.emacs.d/custom.el")
-(load custom-file 'noerror)
-
 (load "~/.emacs.d/advice.el") ; advising functions
 (load "~/.emacs.d/extensions.el") ; custom defuns
 
@@ -407,3 +440,6 @@
 ;; eval: (flycheck-mode -1)
 ;; End:
 (put 'downcase-region 'disabled nil)
+
+;; TODO:
+;; - rspec always reuses the same buffer, so compilation history is lost

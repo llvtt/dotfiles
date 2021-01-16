@@ -4,6 +4,14 @@ test -r ~/.shell_aliases && source ~/.shell_aliases
 
 test -r ~/.shell_env && source ~/.shell_env
 
+test -r ~/.shell_secrets && source ~/.shell_secrets
+
+alias reload="source ~/.zshrc"
+
+function rgb() {
+    printf "\e[38;2;${1};${2};${3}m"
+}
+
 function short_pwd() {
     pwd | sed -E 's/\/.*(\/.*\/.*)/\.\.\.\1/'
 }
@@ -28,16 +36,17 @@ function last_status_symbol() {
     fi
 }
 
+# 136 100 200; 236 40 40; 255 156 34;78 175 252
 function left_prompt() {
     status_symbol="$(last_status_symbol)"
     date_string="$(date +%T)"
     directory_string="$(short_pwd)"
-    echo "%{$FG[099]%}# [${date_string}] %{$FG[203]%}${directory_string}%{$FG[009]%} ${status_symbol} %{$FX[reset]%}"
+    echo "%{$(rgb 236 40 40)%}# [${date_string}] %{$(rgb 255 156 34)%}${directory_string} ${status_symbol} %{$FX[reset]%}"
 }
 
 setopt PROMPT_SUBST
 export PROMPT="\$(left_prompt)"
-export RPROMPT="%{$FG[172]%}\$(show_gitbranch)%{$FX[reset]%}"
+export RPROMPT="%{$(rgb 78 175 252)%}\$(show_gitbranch)%{$FX[reset]%}"
 
 setopt MENU_COMPLETE
 
