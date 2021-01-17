@@ -41,7 +41,6 @@
    sml/mule-info nil
    sml/vc-mode-show-backend nil
    sml/modified-char "δ"
-   ;; sml/fill-char nil
    sml/shorten-directory nil
    )
   )
