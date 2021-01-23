@@ -1,5 +1,5 @@
 (deftheme text-adventure
-  "Created 2021-01-16.")
+  "Created 2021-01-17.")
 
 (custom-theme-set-faces
  'text-adventure
@@ -68,6 +68,7 @@
  '(undo-tree-visualizer-active-branch-face ((t (:foreground "dodgerblue" :weight bold))))
  '(undo-tree-visualizer-unmodified-face ((((class color)) (:foreground "cyan"))))
  '(hl-line ((t (:inherit highlight :extend t :background "#101000"))))
- '(default ((t (:inherit nil :extend nil :stipple nil :foreground "#eae5d7" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 1 :width normal :foundry "default" :family "default")))))
+ '(default ((t (:inherit nil :extend nil :stipple nil :foreground "#eae5d7" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 1 :width normal :foundry "default" :family "default"))))
+ '(web-mode-html-tag-bracket-face ((t (:foreground "gray20")))))
 
 (provide-theme 'text-adventure)

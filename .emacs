@@ -49,6 +49,11 @@
 (use-package eglot
   :config
   (add-to-list 'eglot-server-programs '(web-mode . ("npx" "typescript-language-server" "--stdio")))
+  (setq eglot-confirm-server-initiated-edits nil)
+  ;; these language servers are frankly quite useless due to lack of features
+  ;; they also seem to get confused by our terraform setup, which isn't like most terraform modules
+  ;; (add-to-list 'eglot-server-programs '(terraform-mode . ("terraform-ls" "serve")))
+  ;; (add-to-list 'eglot-server-programs '(terraform-mode . ("terraform-lsp" "-enable-log-file")))
   :bind
   (:map evil-normal-state-map
         ("<SPC>lr" . eglot-rename)
@@ -63,11 +68,24 @@
   (global-flycheck-mode t)
   )
 (use-package string-inflection)
-(use-package yasnippet)
-(use-package rainbow-delimiters)
+
+
+(use-package yasnippet
+  :config
+  (add-to-list 'company-backends '(company-dabbrev-code company-yasnippet))
+  )
+(use-package yasnippet-snippets)
+(use-package rainbow-delimiters
+  :hook ((prog-mode . rainbow-delimiters-mode))
+  )
 (use-package yasnippet
   :init
   (yas-global-mode t)
+  )
+(use-package semantic ;; builtin
+  :config
+  ;; used for "find references" with dumb-jump/xref
+  (add-to-list 'semantic-symref-filepattern-alist '(terraform-mode "*.tf"))
   )
 (use-package dumb-jump
   :config
@@ -76,11 +94,19 @@
 	 (python-mode . dumb-jump-mode)
 	 (js-mode . dumb-jump-mode)
 	 (web-mode . dumb-jump-mode)
+	 (terraform-mode . dumb-jump-mode)
 	 )
   )
+
+(defun company-mode/backend-with-yas (backend)
+  (if (and (listp backend) (member 'company-yasnippet backend))
+      backend
+    (append (if (consp backend) backend (list backend))
+            '(:with company-yasnippet))))
 (use-package company
   :config
   (add-hook 'after-init-hook 'global-company-mode)
+  ;; (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
   )
 (use-package terraform-mode
   :config
@@ -261,7 +287,7 @@
   :hook (ruby-mode . ruby-end-mode)
   )
 (use-package rubocopfmt
-  :hook (ruby-mode . rubocopfmt-mode)
+  ;; :hook (ruby-mode . rubocopfmt-mode)
   :config
   (add-to-list 'rubocopfmt-disabled-cops "Rails/TimeZone")
   )
@@ -319,6 +345,8 @@
   (:map evil-normal-state-map
         ("<SPC>wer" . web-mode-element-rename)
         ("<SPC>wek" . web-mode-element-kill)
+        ("<SPC>wec" . web-mode-element-close)
+        ("<SPC>wes" . web-mode-surround)
         )
   )
 (use-package tide
@@ -439,6 +467,8 @@
 ;; eval: (flycheck-mode -1)
 ;; End:
 (put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
 
 ;; TODO:
 ;; - rspec always reuses the same buffer, so compilation history is lost
+;; - company backend for yasnippet isn't working?
