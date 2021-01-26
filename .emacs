@@ -45,7 +45,6 @@
    )
   )
 
-
 (use-package eglot
   :config
   (add-to-list 'eglot-server-programs '(web-mode . ("npx" "typescript-language-server" "--stdio")))
@@ -387,10 +386,7 @@
 (global-hl-line-mode t)
 (electric-pair-mode t)
 (column-number-mode t)
-
 (fset 'yes-or-no-p 'y-or-n-p)
-
-(put 'narrow-to-region 'disabled nil)
 
 ;; ido
 (setq
@@ -468,6 +464,7 @@
 ;; End:
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
+(put 'narrow-to-region 'disabled nil)
 
 ;; TODO:
 ;; - rspec always reuses the same buffer, so compilation history is lost
