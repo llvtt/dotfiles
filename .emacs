@@ -102,11 +102,6 @@
       backend
     (append (if (consp backend) backend (list backend))
             '(:with company-yasnippet))))
-(use-package company
-  :config
-  (add-hook 'after-init-hook 'global-company-mode)
-  ;; (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
-  )
 (use-package terraform-mode
   :config
   (add-hook 'terraform-mode-hook 'terraform-format-on-save-mode)
@@ -130,6 +125,18 @@
         ("<SPC>gl" . git-link)
         )
  )
+
+;;;;;;;;;;;;;;;;
+;; completion ;;
+;;;;;;;;;;;;;;;;
+
+(use-package company
+  :config
+  (add-hook 'after-init-hook 'global-company-mode)
+  ;; (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
+  )
+(use-package prescient)
+(use-package company-prescient)
 
 ;;;;;;;;;;
 ;; rust ;;
@@ -207,6 +214,13 @@
   (add-hook 'go-mode-hook
             (lambda () (evil-define-key 'normal 'go-mode-map "gd" 'xref-find-definitions)))
   )
+(use-package gotest
+  :bind
+  (:map evil-normal-state-map
+        ("<SPC>gtf" . go-test-current-file)
+        ("<SPC>gtp" . go-test-current-project)
+        ("<SPC>gtt" . go-test-current-test)
+        ))
 
 ;;;;;;;;;;
 ;; ruby ;;
