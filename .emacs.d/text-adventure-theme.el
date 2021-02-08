@@ -1,5 +1,5 @@
 (deftheme text-adventure
-  "Created 2021-01-17.")
+  "Created 2021-02-07.")
 
 (custom-theme-set-faces
  'text-adventure
@@ -54,8 +54,8 @@
  '(diff-refine-removed ((t (:background "#663333" :inherit diff-refine-changed))))
  '(diff-header ((t (:extend t :background "gray55"))))
  '(flycheck-warning ((t (:inherit warning :inverse-video t :underline t))))
- '(flycheck-error ((t (:inherit error :inverse-video t :underline t))))
- '(flycheck-info ((t (:inverse-video t :underline t))))
+ '(flycheck-error ((t (:inherit error))))
+ '(flycheck-info ((t (:underline t :inverse-video t))))
  '(line-number ((t (:inherit (shadow default) :background "gray7" :foreground "wheat4"))))
  '(line-number-major-tick ((t (:inherit line-number-minor-tick :weight bold))))
  '(line-number-minor-tick ((t (:inherit line-number :background "gray10" :weight normal))))
@@ -69,6 +69,6 @@
  '(undo-tree-visualizer-unmodified-face ((((class color)) (:foreground "cyan"))))
  '(hl-line ((t (:inherit highlight :extend t :background "#101000"))))
  '(default ((t (:inherit nil :extend nil :stipple nil :foreground "#eae5d7" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 1 :width normal :foundry "default" :family "default"))))
- '(web-mode-html-tag-bracket-face ((t (:foreground "gray20")))))
+ '(error ((t (:foreground "Red1" :inverse-video t :underline t :weight bold)))))
 
 (provide-theme 'text-adventure)

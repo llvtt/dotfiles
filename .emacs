@@ -48,7 +48,11 @@
 (use-package eglot
   :config
   (add-to-list 'eglot-server-programs '(web-mode . ("npx" "typescript-language-server" "--stdio")))
-  (setq eglot-confirm-server-initiated-edits nil)
+  (setq
+   eglot-confirm-server-initiated-edits nil
+   eglot-connect-timeout 5
+   eglot-send-changes-idle-time 0.25
+   )
   ;; these language servers are frankly quite useless due to lack of features
   ;; they also seem to get confused by our terraform setup, which isn't like most terraform modules
   ;; (add-to-list 'eglot-server-programs '(terraform-mode . ("terraform-ls" "serve")))
@@ -133,10 +137,17 @@
 (use-package company
   :config
   (add-hook 'after-init-hook 'global-company-mode)
+  (setq company-minimum-prefix-length 0)
   ;; (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
   )
-(use-package prescient)
-(use-package company-prescient)
+(use-package prescient
+  :config
+  (setq prescient-persist-mode t)
+  )
+(use-package company-prescient
+  :config
+  (add-hook 'company-mode-hook 'company-prescient-mode)
+  )
 
 ;;;;;;;;;;
 ;; rust ;;
@@ -215,6 +226,9 @@
             (lambda () (evil-define-key 'normal 'go-mode-map "gd" 'xref-find-definitions)))
   )
 (use-package gotest
+  :config
+  (setq
+   go-test-verbose t)
   :bind
   (:map evil-normal-state-map
         ("<SPC>gtf" . go-test-current-file)
