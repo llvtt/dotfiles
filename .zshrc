@@ -85,3 +85,5 @@ bindkey -e
 # End of lines configured by zsh-newuser-install
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+eval "$(direnv hook zsh)"
