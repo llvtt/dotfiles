@@ -1,5 +1,5 @@
 (deftheme text-adventure
-  "Created 2021-02-07.")
+  "Created 2021-02-09.")
 
 (custom-theme-set-faces
  'text-adventure
@@ -9,7 +9,7 @@
  '(escape-glyph ((((background dark)) (:foreground "cyan")) (((type pc)) (:foreground "magenta")) (t (:foreground "brown"))))
  '(homoglyph ((((background dark)) (:foreground "cyan")) (((type pc)) (:foreground "magenta")) (t (:foreground "brown"))))
  '(minibuffer-prompt ((t (:foreground "steelblue1"))))
- '(highlight ((t (:weight bold))))
+ '(highlight ((t (:underline t :weight bold))))
  '(region ((t (:extend t :inverse-video t))))
  '(shadow ((((class color grayscale) (min-colors 88) (background light)) (:foreground "grey50")) (((class color grayscale) (min-colors 88) (background dark)) (:foreground "grey70")) (((class color) (min-colors 8) (background light)) (:foreground "green")) (((class color) (min-colors 8) (background dark)) (:foreground "yellow"))))
  '(secondary-selection ((((class color) (min-colors 88) (background light)) (:extend t :background "yellow1")) (((class color) (min-colors 88) (background dark)) (:extend t :background "SkyBlue4")) (((class color) (min-colors 16) (background light)) (:extend t :background "yellow")) (((class color) (min-colors 16) (background dark)) (:extend t :background "SkyBlue4")) (((class color) (min-colors 8)) (:extend t :foreground "black" :background "cyan")) (t (:inverse-video t))))
@@ -67,8 +67,8 @@
  '(sml/col-number ((t (:foreground "snow4"))))
  '(undo-tree-visualizer-active-branch-face ((t (:foreground "dodgerblue" :weight bold))))
  '(undo-tree-visualizer-unmodified-face ((((class color)) (:foreground "cyan"))))
- '(hl-line ((t (:inherit highlight :extend t :background "#101000"))))
- '(default ((t (:inherit nil :extend nil :stipple nil :foreground "#eae5d7" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 1 :width normal :foundry "default" :family "default"))))
- '(error ((t (:foreground "Red1" :inverse-video t :underline t :weight bold)))))
+ '(hl-line ((t (:background "#101000" :weight bold))))
+ '(error ((t (:foreground "Red1" :inverse-video t :underline t :weight bold))))
+ '(default ((t (:inherit nil :extend nil :stipple nil :foreground "#eae5d7" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 1 :width normal :foundry "default" :family "default")))))
 
 (provide-theme 'text-adventure)

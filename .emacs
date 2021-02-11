@@ -235,6 +235,8 @@
         ("<SPC>gtp" . go-test-current-project)
         ("<SPC>gtt" . go-test-current-test)
         ))
+;; go get -u github.com/davidrjenni/reftools/cmd/fillstruct
+(use-package go-fill-struct)
 
 ;;;;;;;;;;
 ;; ruby ;;
