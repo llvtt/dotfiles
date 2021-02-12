@@ -15,12 +15,45 @@ dotfiles=(.zshrc\
               .shell_env\
          )
 
-cd ~
-for file in ${dotfiles[@]}; do
-    if [ -x $file ]; then
-        mkdir -p "$backup_directory"
-        mv $file "$backup_directory"
-    fi
+install() {
+    cd ~
+    for file in ${dotfiles[@]}; do
+        if [ -x $file ]; then
+            mkdir -p "$backup_directory"
+            mv $file "$backup_directory"
+        fi
 
-    ln -sf "${here}/${file}" $file
-done
+        ln -sf "${here}/${file}" $file
+    done
+}
+
+uninstall() {
+    cd ~
+    for file in ${dotfiles[@]}; do
+        rm -f $file
+        if [ -x "${backup_directory}/${file}" ]; then
+            cp -f "${backup_directory}/${file}" $file
+        fi
+    done
+}
+
+help() {
+    cat <<EOF
+USAGE:
+
+        $0 [install] - Install dotfiles
+        $0 uninstall - Uninstall dotfiles and restore previous files from backup
+        $0 help      - Show this message
+EOF
+}
+
+case "$1" in
+    help)
+        help
+        ;;
+    uninstall)
+        uninstall
+        ;;
+    *)
+        install
+esac
