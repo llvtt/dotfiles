@@ -1,5 +1,5 @@
 (deftheme text-adventure
-  "Created 2021-02-09.")
+  "Created 2021-02-19.")
 
 (custom-theme-set-faces
  'text-adventure
@@ -17,7 +17,7 @@
  '(font-lock-builtin-face ((t (:foreground "mediumpurple"))))
  '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
  '(font-lock-comment-face ((t (:foreground "gray25"))))
- '(font-lock-constant-face ((t (:foreground "wheat3"))))
+ '(font-lock-constant-face ((t (:foreground "mediumpurple2"))))
  '(font-lock-doc-face ((t (:inherit (font-lock-string-face)))))
  '(font-lock-function-name-face ((t (:foreground "orange1" :slant italic))))
  '(font-lock-keyword-face ((t (:foreground "firebrick2"))))
@@ -27,7 +27,7 @@
  '(font-lock-regexp-grouping-construct ((t (:inherit (bold)))))
  '(font-lock-string-face ((t (:foreground "olivedrab3"))))
  '(font-lock-type-face ((t (:foreground "steelblue1"))))
- '(font-lock-variable-name-face ((t (:foreground "olivedrab4"))))
+ '(font-lock-variable-name-face ((t (:foreground "#bbbe93"))))
  '(font-lock-warning-face ((t (:inherit (error)))))
  '(button ((t (:inherit (link)))))
  '(link ((((class color) (min-colors 88) (background light)) (:underline (:color foreground-color :style line) :foreground "RoyalBlue3")) (((class color) (background light)) (:underline (:color foreground-color :style line) :foreground "blue")) (((class color) (min-colors 88) (background dark)) (:underline (:color foreground-color :style line) :foreground "cyan1")) (((class color) (background dark)) (:underline (:color foreground-color :style line) :foreground "cyan")) (t (:inherit (underline)))))
@@ -69,6 +69,7 @@
  '(undo-tree-visualizer-unmodified-face ((((class color)) (:foreground "cyan"))))
  '(hl-line ((t (:background "#101000" :weight bold))))
  '(error ((t (:foreground "Red1" :inverse-video t :underline t :weight bold))))
- '(default ((t (:inherit nil :extend nil :stipple nil :foreground "#eae5d7" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 1 :width normal :foundry "default" :family "default")))))
+ '(default ((t (:inherit nil :extend nil :stipple nil :foreground "#eae5d7" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 1 :width normal :foundry "default" :family "default"))))
+ '(tree-sitter-hl-face:operator ((t (:inherit default)))))
 
 (provide-theme 'text-adventure)
