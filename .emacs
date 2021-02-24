@@ -66,6 +66,12 @@
         ("<SPC>ll" . eglot-reconnect)
         ("<SPC>la" . eglot-code-actions)
         )
+  :hook
+  (
+   (ruby-mode-hook . eglot-ensure)
+   (web-mode-hook . eglot-ensure)
+   (go-mode-hook . eglot-ensure)
+   )
   )
 (use-package yaml-mode)
 (use-package magit)
