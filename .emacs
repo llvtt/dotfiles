@@ -376,6 +376,9 @@
    web-mode-enable-auto-opening t
    web-mode-enable-auto-closing t
    web-mode-enable-auto-indentation t
+   web-mode-code-indent-offset 2
+   web-mode-markup-indent-offset 2
+   web-mode-css-indent-offset 2
    )
   (add-hook 'web-mode-hook 'my-node_modules-flycheck-hook)
   (add-hook 'web-mode-hook (lambda() (add-hook 'after-save-hook 'eslint-fix-file nil t)))
