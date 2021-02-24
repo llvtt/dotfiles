@@ -26,6 +26,10 @@
 ;; general packages ;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
+(use-package which-key
+  :config
+  (which-key-mode 1))
+
 (use-package undo-tree
   :config
   (global-undo-tree-mode)
