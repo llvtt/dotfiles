@@ -95,11 +95,6 @@
   :init
   (yas-global-mode t)
   )
-(use-package semantic ;; builtin
-  :config
-  ;; used for "find references" with dumb-jump/xref
-  (add-to-list 'semantic-symref-filepattern-alist '(terraform-mode "*.tf"))
-  )
 (use-package dumb-jump
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
@@ -118,8 +113,11 @@
             '(:with company-yasnippet))))
 (use-package terraform-mode
   :config
-  (add-hook 'terraform-mode-hook 'terraform-format-on-save-mode)
-  )
+  (add-hook 'terraform-mode-hook
+            (lambda ()
+              (terraform-format-on-save-mode t)
+              (require 'semantic/symref/grep)
+              (add-to-list 'semantic-symref-filepattern-alist '(terraform-mode "*.tf")))))
 (use-package protobuf-mode
   :init
   (add-hook 'protobuf-mode-hook
@@ -424,6 +422,7 @@
 ;;;;;;;;;;;;
 ;; global ;;
 ;;;;;;;;;;;;
+
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
