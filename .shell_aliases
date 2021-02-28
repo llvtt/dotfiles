@@ -83,6 +83,7 @@ alias jbos="jobs"
 alias j="jobs"
 alias emasc="emacs"
 alias e="env TERM=xterm-24bit emacsclient -c -nw"
+alias ee="env TERM=xterm-24bit emacs -nw"
 alias unmongo="killall mongod mongos"
 
 alias post="curl -i -XPOST"

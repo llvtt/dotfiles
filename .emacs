@@ -65,12 +65,13 @@
         ("<SPC>lr" . eglot-rename)
         ("<SPC>ll" . eglot-reconnect)
         ("<SPC>la" . eglot-code-actions)
+        ("<SPC>ld" . eldoc-doc-buffer)
         )
   :hook
   (
-   (ruby-mode-hook . eglot-ensure)
-   (web-mode-hook . eglot-ensure)
-   (go-mode-hook . eglot-ensure)
+   (ruby-mode . eglot-ensure)
+   (web-mode . eglot-ensure)
+   (go-mode . eglot-ensure)
    )
   )
 (use-package yaml-mode)
@@ -410,8 +411,13 @@
 
 (use-package tree-sitter
   :config
-  (global-tree-sitter-mode)
-  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+  (add-hook 'tree-sitter-mode-hook 'tree-sitter-hl-mode)
+  :hook
+  (
+   (go-mode . tree-sitter-mode)
+   (python-mode . tree-sitter-mode)
+   ;; need to make some adjustments to ruby syntax highlighting first before use there
+   )
   )
 (use-package tree-sitter-langs)
 
