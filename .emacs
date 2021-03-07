@@ -57,9 +57,12 @@
   (add-to-list 'eglot-server-programs '(web-mode . ("npx" "typescript-language-server" "--stdio")))
   (setq
    eglot-confirm-server-initiated-edits nil
-   eglot-connect-timeout 5
+   eglot-connect-timeout 1
+   eglot-sync-connect nil
+   eglot-autoreconnect 5
    eglot-send-changes-idle-time 0.25
    )
+  (add-hook 'eglot-connect-hook (lambda (_server) (message "Eglot connected!")))
   ;; these language servers are frankly quite useless due to lack of features
   ;; they also seem to get confused by our terraform setup, which isn't like most terraform modules
   ;; (add-to-list 'eglot-server-programs '(terraform-mode . ("terraform-ls" "serve")))
@@ -76,6 +79,8 @@
    (ruby-mode . eglot-ensure)
    (web-mode . eglot-ensure)
    (go-mode . eglot-ensure)
+   ;; pip install 'python-language-server[all]'
+   (python-mode . eglot-ensure)
    )
   )
 (use-package yaml-mode)
