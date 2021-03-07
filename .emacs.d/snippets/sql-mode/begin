@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: BEGIN
+# key: b
+# --
+BEGIN;
+$0
+COMMIT;

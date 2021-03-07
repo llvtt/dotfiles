@@ -7,39 +7,44 @@
 ;; package setup ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(require 'package)
+;; https://github.com/raxod502/straight.el#bootstrapping-straightel
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
-                         ("melpa" . "https://melpa.org/packages/")))
-(package-initialize)
-(unless package-archive-contents (package-refresh-contents))
-
-;; core packages
-(let ((packages-list '(use-package)))
-  (dolist (package packages-list)
-    (unless (package-installed-p package) (package-install package))))
-(require 'use-package)
-(require 'use-package-ensure)
-(setq use-package-always-ensure t)
+(straight-use-package 'use-package)
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; general packages ;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package sql
+  :straight t
   :config
   (setq sql-dialect "postgres"))
 
 (use-package which-key
+  :straight t
   :config
   (which-key-mode 1))
 
 (use-package undo-tree
+  :straight t
   :config
   (global-undo-tree-mode)
   )
 
 (use-package smart-mode-line
+  :straight t
   :init
   (setq sml/theme 'respectful)
   (sml/setup)
@@ -53,6 +58,7 @@
   )
 
 (use-package eglot
+  :straight t
   :config
   (add-to-list 'eglot-server-programs '(web-mode . ("npx" "typescript-language-server" "--stdio")))
   (setq
@@ -83,28 +89,41 @@
    (python-mode . eglot-ensure)
    )
   )
-(use-package yaml-mode)
-(use-package magit)
+(use-package yaml-mode
+  :straight t
+  )
+(use-package magit
+  :straight t
+  )
 (use-package flycheck
+  :straight t
   :config
   (global-flycheck-mode t)
   )
-(use-package string-inflection)
+(use-package string-inflection
+  :straight t
+  )
 
 
 (use-package yasnippet
+  :straight t
   :config
   (add-to-list 'company-backends '(company-dabbrev-code company-yasnippet))
   )
-(use-package yasnippet-snippets)
+(use-package yasnippet-snippets
+  :straight t
+  )
 (use-package rainbow-delimiters
+  :straight t
   :hook ((prog-mode . rainbow-delimiters-mode))
   )
 (use-package yasnippet
+  :straight t
   :init
   (yas-global-mode t)
   )
 (use-package dumb-jump
+  :straight t
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
   :hook ((ruby-mode . dumb-jump-mode)
@@ -121,6 +140,7 @@
     (append (if (consp backend) backend (list backend))
             '(:with company-yasnippet))))
 (use-package terraform-mode
+  :straight t
   :config
   (add-hook 'terraform-mode-hook
             (lambda ()
@@ -128,6 +148,7 @@
               (require 'semantic/symref/grep)
               (add-to-list 'semantic-symref-filepattern-alist '(terraform-mode "*.tf")))))
 (use-package protobuf-mode
+  :straight t
   :init
   (add-hook 'protobuf-mode-hook
 	    (lambda ()
@@ -135,9 +156,14 @@
 			   (expand-file-name "definitions" (projectile-project-root)))
 	      ))
   )
-(use-package dockerfile-mode)
-(use-package markdown-mode)
+(use-package dockerfile-mode
+  :straight t
+  )
+(use-package markdown-mode
+  :straight t
+  )
 (use-package git-link
+  :straight t
   :bind
   (:map evil-normal-state-map
         ("<SPC>gl" . git-link)
@@ -152,16 +178,19 @@
 ;;;;;;;;;;;;;;;;
 
 (use-package company
+  :straight t
   :config
   (add-hook 'after-init-hook 'global-company-mode)
   (setq company-minimum-prefix-length 0)
   ;; (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
   )
 (use-package prescient
+  :straight t
   :config
   (setq prescient-persist-mode t)
   )
 (use-package company-prescient
+  :straight t
   :config
   (add-hook 'company-mode-hook 'company-prescient-mode)
   )
@@ -171,6 +200,7 @@
 ;;;;;;;;;;
 
 (use-package rust-mode
+  :straight t
   :config
   (add-hook 'rust-mode-hook
             (lambda() (setq
@@ -178,13 +208,16 @@
                        flycheck-checker 'rust-clippy
                        ))
             ))
-(use-package cargo)
+(use-package cargo
+  :straight t
+  )
 
 ;;;;;;;;;;
 ;; evil ;;
 ;;;;;;;;;;
 
 (use-package evil
+  :straight t
   :init
   (setq
    ;; make it easier to see paren matches
@@ -220,6 +253,7 @@
   (evil-mode t)
   )
 (use-package evil-collection
+  :straight t
   :after
   evil
   :config
@@ -227,6 +261,7 @@
   (add-to-list 'evil-collection-mode-list 'ripgrep)
   )
 (use-package evil-surround
+  :straight t
   :config
   (global-evil-surround-mode 1)
   )
@@ -236,6 +271,7 @@
 ;;;;;;;;
 
 (use-package go-mode
+  :straight t
   :config
   (setq gofmt-command "goimports")
   (add-hook 'before-save-hook 'gofmt-before-save)
@@ -243,6 +279,7 @@
             (lambda () (evil-define-key 'normal 'go-mode-map "gd" 'xref-find-definitions)))
   )
 (use-package gotest
+  :straight t
   :config
   (setq
    go-test-verbose t)
@@ -253,13 +290,16 @@
         ("<SPC>gtt" . go-test-current-test)
         ))
 ;; go get -u github.com/davidrjenni/reftools/cmd/fillstruct
-(use-package go-fill-struct)
+(use-package go-fill-struct
+  :straight t
+  )
 
 ;;;;;;;;;;;;
 ;; python ;;
 ;;;;;;;;;;;;
 
 (use-package python
+  :straight t
   :config
   (add-hook 'python-mode-hook (lambda ()
                                 (setq fill-column 80)
@@ -272,12 +312,14 @@
 ;;;;;;;;;;
 
 (use-package projectile
+  :straight t
   :bind
   (:map evil-normal-state-map
         ("<SPC>rpf" . projectile-find-file)
         )
   )
 (use-package projectile-rails
+  :straight t
   :bind
   (:map evil-normal-state-map
         ("<SPC>rpc" . projectile-rails-console)
@@ -294,11 +336,13 @@
         )
   )
 (use-package ripgrep
+  :straight t
   :bind
   (:map evil-normal-state-map
         ("<SPC>rpr" . projectile-ripgrep))
   )
 (use-package rspec-mode
+  :straight t
   :bind
   (:map evil-normal-state-map
         ("<SPC>rra" . rspec-verify)
@@ -310,6 +354,7 @@
   (rspec-install-snippets)
   )
 (use-package minitest
+  :straight t
   :bind
   (:map evil-normal-state-map
         ("<SPC>rma" . minitest-verify)
@@ -319,6 +364,7 @@
   :config
   )
 (use-package ruby-mode
+  :straight t
   :init
   (setq ruby-insert-encoding-magic-comment nil)
   :config
@@ -342,9 +388,11 @@
         )
   )
 (use-package ruby-end
+  :straight t
   :hook (ruby-mode . ruby-end-mode)
   )
 (use-package rubocopfmt
+  :straight t
   ;; :hook (ruby-mode . rubocopfmt-mode)
   :config
   (add-to-list 'rubocopfmt-disabled-cops "Rails/TimeZone")
@@ -384,6 +432,7 @@
     ))
 
 (use-package web-mode
+  :straight t
   :init
   (add-to-list 'auto-mode-alist '("\\.jsx" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.tsx" . web-mode))
@@ -411,6 +460,7 @@
         )
   )
 (use-package tide
+  :straight t
   :after
   (typescript-mode company flycheck)
   :hook
@@ -429,6 +479,7 @@
 ;;;;;;;;;;;;;;;;;
 
 (use-package tree-sitter
+  :straight t
   :config
   (add-hook 'tree-sitter-mode-hook 'tree-sitter-hl-mode)
   :hook
@@ -438,7 +489,9 @@
    ;; need to make some adjustments to ruby syntax highlighting first before use there
    )
   )
-(use-package tree-sitter-langs)
+(use-package tree-sitter-langs
+  :straight t
+  )
 
 ;;;;;;;;;;;;
 ;; global ;;
