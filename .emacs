@@ -26,6 +26,10 @@
 ;; general packages ;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
+(use-package sql
+  :config
+  (setq sql-dialect "postgres"))
+
 (use-package which-key
   :config
   (which-key-mode 1))
