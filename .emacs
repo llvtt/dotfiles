@@ -255,6 +255,18 @@
 ;; go get -u github.com/davidrjenni/reftools/cmd/fillstruct
 (use-package go-fill-struct)
 
+;;;;;;;;;;;;
+;; python ;;
+;;;;;;;;;;;;
+
+(use-package python
+  :config
+  (add-hook 'python-mode-hook (lambda ()
+                                (setq fill-column 80)
+                                (display-fill-column-indicator-mode t)
+                                ))
+  )
+
 ;;;;;;;;;;
 ;; ruby ;;
 ;;;;;;;;;;
@@ -536,3 +548,4 @@
 ;; TODO:
 ;; - rspec always reuses the same buffer, so compilation history is lost
 ;; - company backend for yasnippet isn't working?
+(put 'set-goal-column 'disabled nil)
