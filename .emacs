@@ -25,35 +25,60 @@
 (setq straight-use-package-by-default t)
 (setq package-enable-at-startup nil)
 
-;;;;;;;;;;;;;;;;;;;;;;
-;; general packages ;;
-;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;
+;; evil ;;
+;;;;;;;;;;
 
-(use-package sql
-  :config
-  (setq sql-dialect "postgres"))
-
-(use-package which-key
-  :config
-  (which-key-mode 1))
-
-(use-package undo-tree
-  :config
-  (global-undo-tree-mode)
-  )
-
-(use-package smart-mode-line
+(use-package evil
   :init
-  (setq sml/theme 'respectful)
-  (sml/setup)
-  :config
   (setq
-   sml/mule-info nil
-   sml/vc-mode-show-backend nil
-   sml/modified-char "δ"
-   sml/shorten-directory nil
+   ;; make it easier to see paren matches
+   evil-show-paren-range 1
+   ;; don't add replaced text to the kill ring
+   evil-kill-on-visual-paste nil
+   ;; try to be more like OG emacs when dealing with yanking stuff in general
+   evil-want-Y-yank-to-eol t
+   evil-move-beyond-eol t
+   ;; try to be more like emacs when dealing with window management
+   evil-split-window-below t
+   evil-vsplit-window-right t
+   ;; use M-(number) for prefix argument instead and retain vim movement behavior
+   evil-want-C-u-scroll t
+
+   ;; these need to be set for 'evil-collection to work properly
+   evil-want-integration t
+   evil-want-keybinding nil
+
+   evil-undo-system 'undo-tree
    )
+
+  :hook
+  ;; TODO - add keybindings for "backward"
+  ;; - abstract this somehow to a keymap?
+  (
+   (help-mode . (lambda () (evil-local-set-key 'normal (kbd "C-j") 'forward-button)))
+   (custom-new-theme-mode . (lambda () (evil-local-set-key 'normal (kbd "C-j") 'forward-button)))
+   (compilation-mode . (lambda () (evil-local-set-key 'normal (kbd "C-j") 'compilation-next-error)))
+   )
+  :config
+  ;; must be activated after setting evil-want-* variables
+  (evil-mode t)
   )
+(use-package evil-collection
+  :after
+  evil
+  :config
+  (evil-collection-init)
+  (add-to-list 'evil-collection-mode-list 'ripgrep)
+  )
+(use-package evil-surround
+  :config
+  (global-evil-surround-mode 1)
+  )
+
+;;;;;;;;;;;
+;; eglot ;;
+;;;;;;;;;;;
 
 (use-package eglot
   :config
@@ -86,27 +111,52 @@
    (python-mode . eglot-ensure)
    )
   )
-;; (use-package eglot-flycheck-adaptor
-;;   :straight (eglot-flycheck-adaptor :type git
-;;                                     :host github
-;;                                     :repo "akash-akya/eglot-flycheck-adaptor"))
-;; (straight-use-package
-;;  '(eglot-flycheck-adapter :type git
-;;                           :host github
-;;                           :repo "akash-akya/eglot-flycheck-adaptor"))
+(use-package eglot-flycheck-adaptor
+  :straight (eglot-flycheck-adaptor :type git
+                                    :host github
+                                    :repo "akash-akya/eglot-flycheck-adaptor"
+                                    :fork (:host github
+                                                 :repo "llvtt/eglot-flycheck-adaptor"
+                                                 :branch "provide-feature")))
 
-(use-package yaml-mode
+;;;;;;;;;;;;;;;;;;;;;;
+;; general packages ;;
+;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package sql
+  :config
+  (setq sql-dialect "postgres"))
+
+(use-package which-key
+  :config
+  (which-key-mode 1))
+
+(use-package undo-tree
+  :config
+  (global-undo-tree-mode)
   )
-(use-package magit
+
+(use-package smart-mode-line
+  :init
+  (setq sml/theme 'respectful)
+  (sml/setup)
+  :config
+  (setq
+   sml/mule-info nil
+   sml/vc-mode-show-backend nil
+   sml/modified-char "δ"
+   sml/shorten-directory nil
+   )
   )
+
+
+(use-package yaml-mode)
+(use-package magit)
 (use-package flycheck
   :config
   (global-flycheck-mode t)
   )
-(use-package string-inflection
-  )
-
-
+(use-package string-inflection)
 (use-package yasnippet
   :config
   (add-to-list 'company-backends '(company-dabbrev-code company-yasnippet))
@@ -195,56 +245,6 @@
             ))
 (use-package cargo)
 
-;;;;;;;;;;
-;; evil ;;
-;;;;;;;;;;
-
-(use-package evil
-  :init
-  (setq
-   ;; make it easier to see paren matches
-   evil-show-paren-range 1
-   ;; don't add replaced text to the kill ring
-   evil-kill-on-visual-paste nil
-   ;; try to be more like OG emacs when dealing with yanking stuff in general
-   evil-want-Y-yank-to-eol t
-   evil-move-beyond-eol t
-   ;; try to be more like emacs when dealing with window management
-   evil-split-window-below t
-   evil-vsplit-window-right t
-   ;; use M-(number) for prefix argument instead and retain vim movement behavior
-   evil-want-C-u-scroll t
-
-   ;; these need to be set for 'evil-collection to work properly
-   evil-want-integration t
-   evil-want-keybinding nil
-
-   evil-undo-system 'undo-tree
-   )
-
-  :hook
-  ;; TODO - add keybindings for "backward"
-  ;; - abstract this somehow to a keymap?
-  (
-   (help-mode . (lambda () (evil-local-set-key 'normal (kbd "C-j") 'forward-button)))
-   (custom-new-theme-mode . (lambda () (evil-local-set-key 'normal (kbd "C-j") 'forward-button)))
-   (compilation-mode . (lambda () (evil-local-set-key 'normal (kbd "C-j") 'compilation-next-error)))
-   )
-  :config
-  ;; must be activated after setting evil-want-* variables
-  (evil-mode t)
-  )
-(use-package evil-collection
-  :after
-  evil
-  :config
-  (evil-collection-init)
-  (add-to-list 'evil-collection-mode-list 'ripgrep)
-  )
-(use-package evil-surround
-  :config
-  (global-evil-surround-mode 1)
-  )
 
 ;;;;;;;;
 ;; go ;;
