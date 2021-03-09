@@ -85,7 +85,7 @@
   (add-to-list 'eglot-server-programs '(web-mode . ("npx" "typescript-language-server" "--stdio")))
   (setq
    eglot-confirm-server-initiated-edits nil
-   eglot-connect-timeout 1
+   eglot-connect-timeout 60
    eglot-sync-connect nil
    eglot-autoreconnect 5
    eglot-send-changes-idle-time 0.25
