@@ -45,9 +45,21 @@
 	  (select-window first-win)
 	  (if this-win-2nd (other-window 1))))))
 
+;; https://stackoverflow.com/questions/15692016/emacs-apply-shell-command-to-top-item-in-kill-ring-and-yank/15694531#15694531
+(defun shell-command-on-str (cmd &optional str)
+  "Insert result of calling CMD with STR as input.
+
+STR is current-kill if unspecified.
+"
+  (interactive (list (read-shell-command "Shell command on region: ")))
+  (setq str (or str (current-kill 0)))
+  (with-temp-buffer
+    (insert str)
+    (shell-command-on-region (point-min) (point-max) cmd nil 'replace)))
+
 (defun copy-to-mac-clipboard ()
   (interactive)
-  (shell-command-on-region (region-beginning) (region-end) "pbcopy"))
+  (shell-eommand-on-region (region-beginning) (region-end) "pbcopy"))
 
 (defun paste-from-mac-clipboard ()
   (interactive)

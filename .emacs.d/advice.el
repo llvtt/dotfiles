@@ -19,3 +19,6 @@
       (progn
         (split-window-sensibly (car (window-list)))
         (other-window 1))))
+
+(defadvice git-link (after gitlink/copy-to-clipboard activate)
+  (shell-command-on-str "pbcopy"))

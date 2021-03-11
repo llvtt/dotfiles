@@ -203,6 +203,8 @@
 (use-package dockerfile-mode)
 (use-package markdown-mode)
 (use-package git-link
+  :config
+  (setq git-link-use-commit t)
   :bind
   (:map evil-normal-state-map
         ("<SPC>gl" . git-link)
