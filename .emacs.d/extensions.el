@@ -59,7 +59,7 @@ STR is current-kill if unspecified.
 
 (defun copy-to-mac-clipboard ()
   (interactive)
-  (shell-eommand-on-region (region-beginning) (region-end) "pbcopy"))
+  (shell-command-on-region (region-beginning) (region-end) "pbcopy"))
 
 (defun paste-from-mac-clipboard ()
   (interactive)
