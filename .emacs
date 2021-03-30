@@ -75,6 +75,11 @@
   :config
   (global-evil-surround-mode 1)
   )
+(use-package evil-terminal-cursor-changer
+  :config
+  (setq
+   evil-normal-state-cursor 'hbar)
+  (unless (display-graphic-p) (evil-terminal-cursor-changer-activate)))
 
 ;;;;;;;;;;;
 ;; eglot ;;
@@ -136,19 +141,20 @@
   (global-undo-tree-mode)
   )
 
-(use-package smart-mode-line
-  :init
-  (setq sml/theme 'respectful)
-  (sml/setup)
-  :config
-  (setq
-   sml/mule-info nil
-   sml/vc-mode-show-backend nil
-   sml/modified-char "δ"
-   sml/shorten-directory nil
-   )
-  )
-
+;; TODO - this is broken under emacs 28:
+;; https://www.reddit.com/r/emacs/comments/kqb9s9/cannot_recompile_packagess_error_wrong_number_of/
+;; (use-package smart-mode-line
+;;   :init
+;;   ;;(setq sml/theme 'respectful)
+;;   (sml/setup)
+;;   :config
+;;   (setq
+;;    sml/mule-info nil
+;;    sml/vc-mode-show-backend nil
+;;    sml/modified-char "δ"
+;;    sml/shorten-directory nil
+;;    )
+;;   )
 
 (use-package yaml-mode)
 (use-package magit)
@@ -247,6 +253,11 @@
             ))
 (use-package cargo)
 
+;;;;;;;;;;;
+;; scala ;;
+;;;;;;;;;;;
+
+(use-package scala-mode)
 
 ;;;;;;;;
 ;; go ;;
