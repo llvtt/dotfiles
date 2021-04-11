@@ -138,7 +138,7 @@
 
 (use-package undo-tree
   :config
-  (global-undo-tree-mode)
+  (global-undo-tree-mode nil)
   )
 
 ;; TODO - this is broken under emacs 28:
