@@ -85,44 +85,30 @@
 ;; eglot ;;
 ;;;;;;;;;;;
 
-(use-package eglot
-  :config
-  (add-to-list 'eglot-server-programs '(web-mode . ("npx" "typescript-language-server" "--stdio")))
-  (setq
-   eglot-confirm-server-initiated-edits nil
-   eglot-connect-timeout 60
-   eglot-sync-connect nil
-   eglot-autoreconnect 5
-   eglot-send-changes-idle-time 0.25
-   )
-  (add-hook 'eglot-connect-hook (lambda (_server) (message "Eglot connected!")))
-  ;; these language servers are frankly quite useless due to lack of features
-  ;; they also seem to get confused by our terraform setup, which isn't like most terraform modules
-  ;; (add-to-list 'eglot-server-programs '(terraform-mode . ("terraform-ls" "serve")))
-  ;; (add-to-list 'eglot-server-programs '(terraform-mode . ("terraform-lsp" "-enable-log-file")))
+(use-package lsp-mode
+  :hook ((ruby-mode . lsp)
+         (web-mode . lsp)
+         (go-mode . lsp))
   :bind
   (:map evil-normal-state-map
-        ("<SPC>lr" . eglot-rename)
-        ("<SPC>ll" . eglot-reconnect)
-        ("<SPC>la" . eglot-code-actions)
-        ("<SPC>ld" . eldoc-doc-buffer)
-        )
-  :hook
-  (
-   (ruby-mode . eglot-ensure)
-   (web-mode . eglot-ensure)
-   (go-mode . eglot-ensure)
-   ;; pip install 'python-language-server[all]'
-   (python-mode . eglot-ensure)
-   )
-  )
-(use-package eglot-flycheck-adaptor
-  :straight (eglot-flycheck-adaptor :type git
-                                    :host github
-                                    :repo "akash-akya/eglot-flycheck-adaptor"
-                                    :fork (:host github
-                                                 :repo "llvtt/eglot-flycheck-adaptor"
-                                                 :branch "provide-feature")))
+        ("<SPC>lr" . lsp-rename)
+        ("<SPC>ll" . lsp-workspace-restart)
+        ("<SPC>la" . lsp-execute-code-action)
+        ))
+
+(use-package lsp-ui
+  :bind
+  (:map evil-normal-state-map
+        ("<SPC>li" . lsp-ui-imenu)
+        ("<SPC>lfr" . lsp-ui-peek-find-references))
+  :config
+  (add-hook 'lsp-ui-peek-mode-hook
+            (lambda ()
+              (evil-define-key nil lsp-ui-peek-mode-map (kbd "C-k") 'lsp-ui-peek--select-prev)
+              (evil-define-key nil lsp-ui-peek-mode-map (kbd "C-j") 'lsp-ui-peek--select-next)
+              (evil-define-key nil lsp-ui-peek-mode-map (kbd "M-k") 'lsp-ui-peek--select-prev-file)
+              (evil-define-key nil lsp-ui-peek-mode-map (kbd "M-j") 'lsp-ui-peek--select-next-file)
+              )))
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; general packages ;;
@@ -258,6 +244,14 @@
 ;;;;;;;;;;;
 
 (use-package scala-mode)
+;; (use-package lsp-metals
+;;   :ensure t
+;;   :custom
+;;   ;; Metals claims to support range formatting by default but it supports range
+;;   ;; formatting of multiline strings only. You might want to disable it so that
+;;   ;; emacs can use indentation provided by scala-mode.
+;;   (lsp-metals-server-args '("-J-Dmetals.allow-multiline-string-formatting=off"))
+;;   :hook (scala-mode . lsp))
 
 ;;;;;;;;
 ;; go ;;
@@ -429,7 +423,7 @@
    web-mode-css-indent-offset 2
    )
   (add-hook 'web-mode-hook 'my-node_modules-flycheck-hook)
-  (add-hook 'web-mode-hook (lambda() (add-hook 'after-save-hook 'eslint-fix-file nil t)))
+  ;; (add-hook 'web-mode-hook (lambda() (add-hook 'after-save-hook 'eslint-fix-file nil t)))
   :bind
   (:map evil-normal-state-map
         ("<SPC>wer" . web-mode-element-rename)
