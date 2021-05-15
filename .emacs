@@ -32,18 +32,19 @@
 (use-package evil
   :init
   (setq
+   evil-regexp-search nil
    ;; make it easier to see paren matches
    evil-show-paren-range 1
    ;; don't add replaced text to the kill ring
    evil-kill-on-visual-paste nil
    ;; try to be more like OG emacs when dealing with yanking stuff in general
    evil-want-Y-yank-to-eol t
-   evil-move-beyond-eol t
    ;; try to be more like emacs when dealing with window management
    evil-split-window-below t
    evil-vsplit-window-right t
    ;; use M-(number) for prefix argument instead and retain vim movement behavior
    evil-want-C-u-scroll t
+   evil-want-C-u-delete t
 
    ;; these need to be set for 'evil-collection to work properly
    evil-want-integration t
@@ -71,6 +72,9 @@
   (evil-collection-init)
   (add-to-list 'evil-collection-mode-list 'ripgrep)
   )
+;; https://github.com/emacs-evil/evil-surround
+;; cs<old><new>
+;; ds<operator to delete>
 (use-package evil-surround
   :config
   (global-evil-surround-mode 1)
