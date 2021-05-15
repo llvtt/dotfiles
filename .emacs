@@ -92,6 +92,7 @@
 (use-package lsp-mode
   :hook ((ruby-mode . lsp)
          (web-mode . lsp)
+         (python-mode . lsp)
          (go-mode . lsp))
   :bind
   (:map evil-normal-state-map
@@ -292,6 +293,7 @@
                                 (display-fill-column-indicator-mode t)
                                 ))
   )
+(use-package pyvenv)
 
 ;;;;;;;;;;
 ;; ruby ;;
@@ -461,6 +463,7 @@
   (
    (go-mode . tree-sitter-mode)
    (python-mode . tree-sitter-mode)
+   (sh-mode . tree-sitter-mode)
    ;; need to make some adjustments to ruby syntax highlighting first before use there
    )
   )

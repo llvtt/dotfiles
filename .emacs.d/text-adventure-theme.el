@@ -1,5 +1,5 @@
 (deftheme text-adventure
-  "Created 2021-04-13.")
+  "Created 2021-05-13.")
 
 (custom-theme-set-faces
  'text-adventure
@@ -71,10 +71,11 @@
  '(error ((t (:foreground "Red1" :inverse-video t :underline t :weight bold))))
  '(tree-sitter-hl-face:operator ((t (:inherit default))))
  '(web-mode-html-tag-bracket-face ((t (:foreground "#3a4b20"))))
- '(default ((t (:inherit nil :extend nil :stipple nil :foreground "#eae5d7" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 1 :width normal :foundry "default" :family "default"))))
  '(lsp-ui-doc-background ((t (:background "#202083"))))
  '(lsp-ui-peek-peek ((t (:background "#202043"))))
  '(lsp-ui-peek-header ((((background light)) (:foreground "white" :background "grey30")) (t (:foreground "black" :background "white"))))
- '(lsp-ui-peek-list ((t (:background "#202083")))))
+ '(lsp-ui-peek-list ((t (:background "#202083"))))
+ '(default ((t (:inherit nil :extend nil :stipple nil :foreground "#eae5d7" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 1 :width normal :foundry "default" :family "default"))))
+ '(smerge-markers ((t (:extend t :background "#363636")))))
 
 (provide-theme 'text-adventure)
