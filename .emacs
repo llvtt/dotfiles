@@ -359,9 +359,11 @@
 		(setq-local electric-pair-pairs (append electric-pair-pairs ruby-mode-pairs))
 		(setq-local electric-pair-text-pairs (append electric-pair-text-pairs ruby-mode-pairs)))
 
-               (set (make-local-variable 'compilation-error-regexp-alist-alist)
-                    (list (quote ('ruby-Test::Unit "^ *\\([^ (].*\\):\\([1-9][0-9]*\\):in " 1 2))))
-	      ))
+              (set (make-local-variable 'compilation-error-regexp-alist-alist)
+                   (list (quote ('ruby-Test::Unit "^ *\\([^ (].*\\):\\([1-9][0-9]*\\):in " 1 2))))
+
+              (add-hook 'lsp-ui-hook (lambda () (flycheck-add-next-checker 'lsp 'ruby-rubocop)) 0 t)
+              ))
   :bind
   (:map evil-normal-state-map
         ("<SPC>re" . ruby-toggle-block)

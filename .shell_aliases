@@ -97,7 +97,7 @@ alias iso8601="date +%Y-%m-%dT%H:%M:%S"
 
 alias creds="env | fgrep AWS | sed 's/^/export /' | pbcopy"
 alias nodock="docker-compose rm -sf"
-alias dc=docker-compose
+alias dc="docker-compose"
 
 # Current projects
 alias pluto="bundle exec rackup -p 4000"
@@ -176,19 +176,19 @@ man() {
 }
 
 function mr() {
-    ssh llovett@`aws ec2 describe-instances --filter Name=tag:aws:autoscaling:groupName,Values=production-migration-runner | fgrep PrivateIpAddress | head -n 1 | grep --color=never -o '\(\d\+\.\)\{3\}\d\+'` "$*"
+    ssh llovett@`aws ec2 describe-instances --filter Name=tag:Name,Values=production-migration-runner | fgrep PrivateIpAddress | head -n 1 | grep --color=never -o '\(\d\+\.\)\{3\}\d\+'` "$*"
 }
 
 function mrcp() {
-    scp $1 llovett@`aws ec2 describe-instances --filter Name=tag:aws:autoscaling:groupName,Values=production-migration-runner | fgrep PrivateIpAddress | head -n 1 | grep --color=never -o '\(\d\+\.\)\{3\}\d\+'`:~/
+    scp $1 llovett@`aws ec2 describe-instances --filter Name=tag:Name,Values=production-migration-runner | fgrep PrivateIpAddress | head -n 1 | grep --color=never -o '\(\d\+\.\)\{3\}\d\+'`:~/
 }
 
 function smrcp() {
-    scp $1 llovett@`aws ec2 describe-instances --filter Name=tag:aws:autoscaling:groupName,Values=stag-migration-runner | fgrep PrivateIpAddress | head -n 1 | grep --color=never -o '\(\d\+\.\)\{3\}\d\+'`:~/
+    scp $1 llovett@`aws ec2 describe-instances --filter Name=tag:Name,Values=staging-migration-runner | fgrep PrivateIpAddress | head -n 1 | grep --color=never -o '\(\d\+\.\)\{3\}\d\+'`:~/
 }
 
 function smr() {
-    ssh llovett@`aws ec2 describe-instances --filter Name=tag:aws:autoscaling:groupName,Values=stag-migration-runner | fgrep PrivateIpAddress | head -n 1 | grep --color=never -o '\(\d\+\.\)\{3\}\d\+'` "$*"
+    ssh llovett@`aws ec2 describe-instances --filter Name=tag:Name,Values=staging-migration-runner | fgrep PrivateIpAddress | head -n 1 | grep --color=never -o '\(\d\+\.\)\{3\}\d\+'` "$*"
 }
 
 function cob() {
