@@ -60,6 +60,9 @@
    (help-mode . (lambda () (evil-local-set-key 'normal (kbd "C-j") 'forward-button)))
    (custom-new-theme-mode . (lambda () (evil-local-set-key 'normal (kbd "C-j") 'forward-button)))
    (compilation-mode . (lambda () (evil-local-set-key 'normal (kbd "C-j") 'compilation-next-error)))
+   (log-view-mode . (lambda ()
+                      (evil-local-set-key 'normal (kbd "C-j") 'log-view-msg-next)
+                      (evil-local-set-key 'normal (kbd "C-k") 'log-view-msg-prev)))
    )
   :config
   ;; must be activated after setting evil-want-* variables
@@ -294,6 +297,11 @@
                                 ))
   )
 (use-package pyvenv)
+(use-package lsp-python-ms
+  :init
+  (setq lsp-python-ms-auto-install-server t)
+  :hook
+  (python-mode . (lambda () (require 'lsp-python-ms) (lsp))))
 
 ;;;;;;;;;;
 ;; ruby ;;
@@ -303,6 +311,7 @@
   :bind
   (:map evil-normal-state-map
         ("<SPC>rpf" . projectile-find-file)
+        ("<f12>" . projectile-find-file)
         )
   )
 (use-package projectile-rails
@@ -418,6 +427,7 @@
   (add-to-list 'auto-mode-alist '("\\.jsx" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.tsx" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.ts" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.js" . web-mode))
   :config
   (flycheck-add-mode 'javascript-eslint 'web-mode)
   (setq
@@ -431,7 +441,11 @@
    web-mode-css-indent-offset 2
    )
   (add-hook 'web-mode-hook 'my-node_modules-flycheck-hook)
-  ;; (add-hook 'web-mode-hook (lambda() (add-hook 'after-save-hook 'eslint-fix-file nil t)))
+  (add-hook 'web-mode-hook
+            (lambda()
+              (add-hook 'after-save-hook 'eslint-fix-file nil t)
+              (add-hook 'lsp-ui-hook (lambda () (flycheck-add-next-checker 'lsp 'javascript-eslint)) 0 t)
+              ))
   :bind
   (:map evil-normal-state-map
         ("<SPC>wer" . web-mode-element-rename)
@@ -440,19 +454,19 @@
         ("<SPC>wes" . web-mode-surround)
         )
   )
-(use-package tide
-  :after
-  (typescript-mode company flycheck)
-  :hook
-  (
-   (web-mode . tide-setup)
-   (before-save . tide-format-before-save)
-   )
-  :bind
-  (:map evil-normal-state-map
-        ("<SPC>tf" . tide-fix)
-        )
-  )
+;; (use-package tide
+;;   :after
+;;   (typescript-mode company flycheck)
+;;   :hook
+;;   (
+;;    (web-mode . tide-setup)
+;;    (before-save . tide-format-before-save)
+;;    )
+;;   :bind
+;;   (:map evil-normal-state-map
+;;         ("<SPC>tf" . tide-fix)
+;;         )
+;;   )
 
 ;;;;;;;;;;;;;;;;;
 ;; tree sitter ;;
@@ -470,6 +484,13 @@
    )
   )
 (use-package tree-sitter-langs)
+(use-package origami
+  :config (global-origami-mode)
+  :bind
+  (:map evil-normal-state-map
+        ("zu" . origami-undo)
+        )
+  )
 
 ;;;;;;;;;;;;
 ;; global ;;

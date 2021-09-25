@@ -5,7 +5,7 @@
 
 #!/usr/bin/env ruby
 
-exec('rails', 'runner', File.expand_path(__FILE__), *ARGV) unless defined?(Rails)
+exec('bundle', 'exec', 'rails', 'runner', File.expand_path(__FILE__), *ARGV) unless defined?(Rails)
 
 Script.run do
   $1

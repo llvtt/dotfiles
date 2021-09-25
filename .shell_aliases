@@ -7,8 +7,8 @@ function psargs() {
 # cd aliases
 alias ccd=cd
 alias cdc=cd
-alias dc=cd
 # /cd aliases
+
 alias cd-="cd -"
 alias co-="co -"
 alias sk="bundle exec sidekiq -e development_automated"
@@ -19,9 +19,11 @@ alias cci="circleci"
 alias bb="git_recent"
 alias gp="git push"
 alias grc="git rebase --continue"
+alias gra="git rebase --abort"
 alias nocache="rake tmp:cache:clear"
 alias git="hub"
 alias gbl="git branch -l"
+alias gpl="git pull"
 alias cdapp="cd ~/code/raise-ror-webapp"
 alias new="ls -lt | head -n 5"
 alias diskhog="ls -A | sed 's/ /\\\\ /g' | xargs du -s | sort -n | cut -f2 | xargs du -sh"
@@ -70,8 +72,6 @@ alias style="./gradlew findbugsMain findbugsTest checkstyleMain checkstyleTest"
 alias gtest="./gradlew clean jar testsJar test"
 alias mo='mongo-orchestration'
 alias govet="go tool vet"
-alias gdd="git diff \`git merge-base upstream/develop HEAD\`"
-alias gddn="git diff \`git merge-base upstream/develop HEAD\` --name-only"
 alias pop="git stash pop"
 alias amend="git commit --amend"
 
@@ -98,6 +98,7 @@ alias iso8601="date +%Y-%m-%dT%H:%M:%S"
 alias creds="env | fgrep AWS | sed 's/^/export /' | pbcopy"
 alias nodock="docker-compose rm -sf"
 alias dc="docker-compose"
+alias dct="docker-compose logs --tail 1 -f"
 
 # Current projects
 alias pluto="bundle exec rackup -p 4000"
@@ -193,6 +194,18 @@ function smr() {
 
 function cob() {
     git checkout -b $1 ${2:-upstream/develop}
+}
+
+function gdd() {
+    git diff $(git merge-base ${1:-upstream/develop} HEAD)
+}
+
+function stats() {
+    git diff $(git merge-base ${1:-upstream/develop} HEAD) --stat
+}
+
+function gddn() {
+    git diff --name-only $(git merge-base ${1:-upstream/develop} HEAD)
 }
 
 function bu() {

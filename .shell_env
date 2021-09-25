@@ -46,13 +46,21 @@ export RAILS_ASSET_DEBUG=true
 export CIRCLE_BRANCH=develop
 export RACK_ENV=development
 
+##########
+# docker #
+##########
+
+# Do not show the ad 'Use 'docker scan' to run Snyk tests against images to find vulnerabilities and learn how to fix them'
+export DOCKER_SCAN_SUGGEST=false
+
 ########
 # PATH #
 ########
-export CDPATH="$CDPATH:$HOME/code"
+export CDPATH="$CDPATH:$HOME/code/dev-environment:$HOME/code"
 PATH="$HOME/local/bin:$PATH"
 # Add rbenv shims to the path.
 PATH="$HOME/.rbenv/shims:$PATH"
+eval "$(rbenv init -)"
 # Add nodenv shims to the path.
 PATH="$HOME/.nodenv/shims:$PATH"
 # Add skim utilities to PATH.
