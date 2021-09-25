@@ -12,3 +12,4 @@
 .emacs.d/projectile.cache
 .emacs.d/url/*
 .emacs.d/.lsp-session-*
+.emacs.d/eln-cache/*
