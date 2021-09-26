@@ -97,6 +97,10 @@
          (web-mode . lsp)
          (python-mode . lsp)
          (go-mode . lsp))
+  :config
+  (setq
+   lsp-response-timeout 2
+   lsp-headerline-breadcrumb-icons-enable nil)
   :bind
   (:map evil-normal-state-map
         ("<SPC>lr" . lsp-rename)
@@ -158,6 +162,7 @@
   )
 (use-package string-inflection)
 (use-package yasnippet
+  :requires (company)
   :config
   (add-to-list 'company-backends '(company-dabbrev-code company-yasnippet))
   )
@@ -229,6 +234,7 @@
   (setq prescient-persist-mode t)
   )
 (use-package company-prescient
+  :requires (company)
   :config
   (add-hook 'company-mode-hook 'company-prescient-mode)
   )
@@ -342,8 +348,6 @@
         ("<SPC>rrs" . rspec-verify-single)
         )
   :config
-  (setq
-   rspec-allow-multiple-compilation-buffers t)
   (rspec-install-snippets)
   )
 (use-package minitest
@@ -371,7 +375,7 @@
               (set (make-local-variable 'compilation-error-regexp-alist-alist)
                    (list (quote ('ruby-Test::Unit "^ *\\([^ (].*\\):\\([1-9][0-9]*\\):in " 1 2))))
 
-              (add-hook 'lsp-ui-hook (lambda () (flycheck-add-next-checker 'lsp 'ruby-rubocop)) 0 t)
+              (add-hook 'lsp-after-initialize-hook (lambda () (flycheck-add-next-checker 'lsp 'ruby-rubocop)) 0 t)
               ))
   :bind
   (:map evil-normal-state-map
@@ -384,10 +388,9 @@
   :hook (ruby-mode . ruby-end-mode)
   )
 (use-package rubocopfmt
-  ;; :hook (ruby-mode . rubocopfmt-mode)
-  :config
-  (add-to-list 'rubocopfmt-disabled-cops "Rails/TimeZone")
   )
+(use-package evil-ruby-text-objects
+  :hook (ruby-mode . evil-ruby-text-objects-mode))
 
 ;;;;;;;;;
 ;; web ;;
