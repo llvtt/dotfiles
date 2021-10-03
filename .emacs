@@ -141,18 +141,18 @@
 
 ;; TODO - this is broken under emacs 28:
 ;; https://www.reddit.com/r/emacs/comments/kqb9s9/cannot_recompile_packagess_error_wrong_number_of/
-;; (use-package smart-mode-line
-;;   :init
-;;   ;;(setq sml/theme 'respectful)
-;;   (sml/setup)
-;;   :config
-;;   (setq
-;;    sml/mule-info nil
-;;    sml/vc-mode-show-backend nil
-;;    sml/modified-char "δ"
-;;    sml/shorten-directory nil
-;;    )
-;;   )
+(use-package smart-mode-line
+  :init
+  (setq sml/theme 'respectful)
+  (sml/setup)
+  :config
+  (setq
+   sml/mule-info nil
+   sml/vc-mode-show-backend nil
+   sml/modified-char "δ"
+   sml/shorten-directory nil
+   )
+  )
 
 (use-package yaml-mode)
 (use-package magit)
