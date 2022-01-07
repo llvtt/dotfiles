@@ -27,6 +27,22 @@ function show_gitbranch() {
     fi
 }
 
+function spotify_status() {
+    if [ "$SPOTIFY_PROMPT" = "" ]; then
+        return
+    fi
+    output=$(spotify status 2>&1)
+    song=$(echo $output | head -n 1 | tr -d '🎤🎵\r' | sed -e 's/^ *//' -e 's/ *$//')
+    if [ "$(echo $song | wc -m)" -gt 20 ]; then
+        song="$(echo $song | cut -c1-20)…"
+    fi
+    artist=$(echo $output | head -n 2 | tail -1 | tr -d '🎤🎵\r' | sed -e 's/^ *//' -e 's/ *$//')
+    if [ "$(echo $artist | wc -m)" -gt 15 ]; then
+        artist="$(echo $artist | cut -c1-15)…"
+    fi
+    echo "🎵 ${song} by 🎤 ${artist}"
+}
+
 function last_status_symbol() {
     exit_code=$?
     if [ $exit_code -eq 0 ]; then
@@ -46,7 +62,7 @@ function left_prompt() {
 
 setopt PROMPT_SUBST
 export PROMPT="\$(left_prompt)"
-export RPROMPT="%{$(rgb 78 175 252)%}\$(show_gitbranch)%{$FX[reset]%}"
+export RPROMPT="\$(spotify_status)%{$(rgb 78 175 252)%}\$(show_gitbranch)%{$FX[reset]%}"
 
 setopt MENU_COMPLETE
 

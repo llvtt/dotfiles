@@ -363,6 +363,7 @@
   :init
   (setq ruby-insert-encoding-magic-comment nil)
   :config
+  (subword-mode t)
   (add-hook 'ruby-mode-hook
             (lambda ()
               (setq-local flycheck-command-wrapper-function

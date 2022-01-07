@@ -64,6 +64,7 @@ alias gpum="git pull --rebase upstream master"
 alias gpud="git pull --rebase upstream develop"
 alias gsl="git stash list"
 alias gsp="git show -p"
+alias gspn="git show -p --name-only"
 alias testall="python -m unittest discover -v"
 alias ip="ipython"
 alias top=htop
