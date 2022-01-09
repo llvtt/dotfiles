@@ -58,20 +58,36 @@ export DOCKER_SCAN_SUGGEST=false
 ########
 export CDPATH="$CDPATH:$HOME/code/dev-environment:$HOME/code"
 PATH="$HOME/local/bin:$PATH"
+
 # Add rbenv shims to the path.
-PATH="$HOME/.rbenv/shims:$PATH"
-eval "$(rbenv init -)"
+whence rbenv && {
+  PATH="$HOME/.rbenv/shims:$PATH"
+  eval "$(rbenv init -)"
+}
+
 # Add nodenv shims to the path.
-PATH="$HOME/.nodenv/shims:$PATH"
+whence nodenv && {
+  PATH="$HOME/.nodenv/shims:$PATH"
+}
+
 # Add skim utilities to PATH.
 PATH="$PATH:/Applications/Skim.app/Contents/SharedSupport"
+
 # goenv
-export GOENV_ROOT="$HOME/.goenv"
-export PATH="$GOENV_ROOT/bin:$PATH"
-eval "$(goenv init -)"
-export PATH="$GOROOT/bin:$PATH"
-export PATH="$PATH:$GOPATH/bin"
+whence goenv && {
+  export GOENV_ROOT="$HOME/.goenv"
+  export PATH="$GOENV_ROOT/bin:$PATH"
+  eval "$(goenv init -)"
+  export PATH="$GOROOT/bin:$PATH"
+  export PATH="$PATH:$GOPATH/bin"
+}
+
 # pyenv
-export PYENV_ROOT="${HOME}/.pyenv"
-export PATH="${PYENV_ROOT}/bin:${PATH}"
-eval "$(pyenv init -)"
+whence pyenv && {
+  export PYENV_ROOT="${HOME}/.pyenv"
+  export PATH="${PYENV_ROOT}/bin:${PATH}"
+  eval "$(pyenv init -)"
+}
+
+# emacs
+export PATH="${PATH}:/Applications/Emacs.app/Contents/MacOS/bin"
