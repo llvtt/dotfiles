@@ -102,4 +102,4 @@ bindkey -e
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-eval "$(direnv hook zsh)"
+whence direnv && eval "$(direnv hook zsh)"
