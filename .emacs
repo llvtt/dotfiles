@@ -489,7 +489,7 @@
   )
 (use-package tree-sitter-langs)
 (use-package origami
-  :config (global-origami-mode)
+  :config (global-origami-mode 1)
   :bind
   (:map evil-normal-state-map
         ("zu" . origami-undo)
