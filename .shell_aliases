@@ -94,6 +94,9 @@ alias delete="curl -i -XDELETE"
 alias get="curl -i -XGET"
 alias put="curl -i -XPUT"
 
+alias s=gsutil
+alias g=gcloud
+
 alias iso8601="date +%Y-%m-%dT%H:%M:%S"
 
 alias creds="env | fgrep AWS | sed 's/^/export /' | pbcopy"
@@ -194,7 +197,7 @@ function smr() {
 }
 
 function cob() {
-    git checkout -b $1 ${2:-upstream/develop}
+    git checkout -b $1 ${2:-origin/main}
 }
 
 function gdd() {
