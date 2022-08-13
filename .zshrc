@@ -48,7 +48,7 @@ function last_status_symbol() {
     if [ $exit_code -eq 0 ]; then
         echo ►
     else
-        echo ▻
+        echo ◅
     fi
 }
 
