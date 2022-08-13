@@ -88,14 +88,15 @@
    evil-normal-state-cursor 'hbar)
   (unless (display-graphic-p) (evil-terminal-cursor-changer-activate)))
 
-;;;;;;;;;;;
-;; eglot ;;
-;;;;;;;;;;;
+;;;;;;;;;
+;; LSP ;;
+;;;;;;;;;
 
 (use-package lsp-mode
   :hook ((ruby-mode . lsp)
          (web-mode . lsp)
          (python-mode . lsp)
+         (sh-mode . lsp) ; https://github.com/bash-lsp/bash-language-server
          (go-mode . lsp))
   :config
   (setq
@@ -226,7 +227,7 @@
 (use-package company
   :config
   (add-hook 'after-init-hook 'global-company-mode)
-  (setq company-minimum-prefix-length 0)
+  (setq company-minimum-prefix-length 2)
   ;; (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
   )
 (use-package prescient
@@ -303,11 +304,11 @@
                                 ))
   )
 (use-package pyvenv)
-(use-package lsp-python-ms
-  :init
-  (setq lsp-python-ms-auto-install-server t)
-  :hook
-  (python-mode . (lambda () (require 'lsp-python-ms) (lsp))))
+(use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp))))
 
 ;;;;;;;;;;
 ;; ruby ;;

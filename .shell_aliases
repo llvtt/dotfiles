@@ -84,6 +84,7 @@ alias j="jobs"
 alias emasc="emacs"
 alias e="env TERM=xterm-24bit emacsclient -c -nw"
 alias ee="env TERM=xterm-24bit emacs -nw"
+alias emd="emacs --daemon"
 alias v=nvim
 alias vi=nvim
 alias unmongo="killall mongod mongos"
