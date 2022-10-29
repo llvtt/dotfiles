@@ -113,7 +113,8 @@
   :bind
   (:map evil-normal-state-map
         ("<SPC>li" . lsp-ui-imenu)
-        ("<SPC>lfr" . lsp-ui-peek-find-references))
+        ("<SPC>lfr" . lsp-ui-peek-find-references)
+        ("<SPC>lfg" . lsp-find-references))
   :config
   (add-hook 'lsp-ui-peek-mode-hook
             (lambda ()
@@ -122,6 +123,14 @@
               (evil-define-key nil lsp-ui-peek-mode-map (kbd "M-k") 'lsp-ui-peek--select-prev-file)
               (evil-define-key nil lsp-ui-peek-mode-map (kbd "M-j") 'lsp-ui-peek--select-next-file)
               )))
+
+;;;;;;;;;;;;;
+;; graphql ;;
+;;;;;;;;;;;;;
+
+(use-package request) ; dependency of emacs-graphql
+; npm i graphql-language-service-cli
+(use-package graphql)
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; general packages ;;
@@ -136,8 +145,11 @@
   (which-key-mode 1))
 
 (use-package undo-tree
-  :config
+  :init
   (global-undo-tree-mode nil)
+  :config
+  (setq undo-tree-history-directory-alist
+        '((".*" . "~/.emacs.d/backups")))
   )
 
 ;; TODO - this is broken under emacs 28:
@@ -309,6 +321,17 @@
   :hook (python-mode . (lambda ()
                           (require 'lsp-pyright)
                           (lsp))))
+(use-package python-black
+  :demand t
+  :after python
+  :hook (python-mode . python-black-on-save-mode-enable-dwim))
+(use-package python-pytest
+  :config
+  (setq python-pytest-unsaved-buffers-behavior nil)
+  :bind
+  (:map evil-normal-state-map
+        ("<SPC>ptf" . python-pytest-file)
+        ("<SPC>pt." . python-pytest-function)))
 
 ;;;;;;;;;;
 ;; ruby ;;
@@ -444,6 +467,7 @@
    web-mode-code-indent-offset 2
    web-mode-markup-indent-offset 2
    web-mode-css-indent-offset 2
+   web-mode-content-types-alist '(("jsx" . ".*\\.js[x]?"))
    )
   (add-hook 'web-mode-hook 'my-node_modules-flycheck-hook)
   (add-hook 'web-mode-hook
@@ -473,6 +497,30 @@
 ;;         )
 ;;   )
 
+;;;;;;;;;;;;;;
+;; mmm mode ;;
+;;;;;;;;;;;;;;
+
+;; configuration based on https://gist.github.com/rangeoshun/67cb17392c523579bc6cbd758b2315c1
+(use-package mmm-mode
+  :config
+  ;; Add submodule for graphql blocks
+  (mmm-add-classes
+   '((mmm-graphql-mode
+      :submode graphql-mode
+      :front "gr?a?p?h?ql`"
+      :back "`;")))
+  (mmm-add-mode-ext-class 'web-mode nil 'mmm-graphql-mode))
+
+(defun mmm-reapply ()
+  (mmm-mode)
+  (mmm-mode))
+
+(add-hook 'after-save-hook
+          (lambda ()
+            (when (string-match-p "\\.tsx?" buffer-file-name)
+              (mmm-reapply))))
+
 ;;;;;;;;;;;;;;;;;
 ;; tree sitter ;;
 ;;;;;;;;;;;;;;;;;
@@ -497,10 +545,17 @@
         )
   )
 
+
+;;;;;;;;;;;
+;; swift ;;
+;;;;;;;;;;;
+
+(use-package swift-mode)
+
+
 ;;;;;;;;;;;;
 ;; global ;;
 ;;;;;;;;;;;;
-
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)

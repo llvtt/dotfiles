@@ -57,7 +57,6 @@ export DOCKER_SCAN_SUGGEST=false
 # PATH #
 ########
 export CDPATH="$CDPATH:$HOME/code/dev-environment:$HOME/code"
-PATH="$HOME/local/bin:$PATH"
 
 # Add rbenv shims to the path.
 whence rbenv && {
@@ -77,13 +76,13 @@ export PATH="${PATH}:/opt/homebrew/bin"
 PATH="$PATH:/Applications/Skim.app/Contents/SharedSupport"
 
 # goenv
-whence goenv && {
+if [ -d "$HOME/.goenv" ]; then
   export GOENV_ROOT="$HOME/.goenv"
   export PATH="$GOENV_ROOT/bin:$PATH"
   eval "$(goenv init -)"
   export PATH="$GOROOT/bin:$PATH"
   export PATH="$PATH:$GOPATH/bin"
-}
+fi
 
 # pyenv
 whence pyenv && {
@@ -93,4 +92,9 @@ whence pyenv && {
 }
 
 # emacs
-export PATH="${PATH}:/Applications/Emacs.app/Contents/MacOS/bin"
+PATH="${PATH}:/Applications/Emacs.app/Contents/MacOS/bin"
+
+# local
+PATH="$HOME/local/bin:$PATH"
+
+export PATH

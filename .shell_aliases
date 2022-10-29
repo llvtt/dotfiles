@@ -24,6 +24,7 @@ alias grv="git remote -v"
 alias nocache="rake tmp:cache:clear"
 alias gbl="git branch -l"
 alias gpl="git pull"
+alias gbm="git branch -m"
 alias cdapp="cd ~/code/raise-ror-webapp"
 alias new="ls -lt | head -n 5"
 alias diskhog="ls -A | sed 's/ /\\\\ /g' | xargs du -s | sort -n | cut -f2 | xargs du -sh"
@@ -62,6 +63,7 @@ alias gri="git rebase -i"
 alias ungit="git reset --hard HEAD"
 alias gpum="git pull --rebase upstream master"
 alias gpud="git pull --rebase upstream develop"
+alias bump="git commit --allow-empty -m 'bump'"
 alias gsl="git stash list"
 alias gsp="git show -p"
 alias gspn="git show -p --name-only"
@@ -88,7 +90,6 @@ alias ee="env TERM=xterm-24bit emacs -nw"
 alias emd="emacs --daemon"
 alias v=nvim
 alias vi=nvim
-alias unmongo="killall mongod mongos"
 
 alias post="curl -i -XPOST"
 alias delete="curl -i -XDELETE"
@@ -105,8 +106,7 @@ alias nodock="docker-compose rm -sf"
 alias dc="docker-compose"
 alias dct="docker-compose logs --tail 1 -f"
 
-# Current projects
-alias pluto="bundle exec rackup -p 4000"
+alias ve="pushd ~/.virtualenvs"
 
 function ec2ssh() {
     ip=`aws ec2 describe-instances --instance-id $1 --query 'Reservations[].Instances[].PrivateIpAddress' --output text`
@@ -138,7 +138,7 @@ function rot() {
 }
 
 function squash() {
-    git rebase -i $(git merge-base ${1:-upstream/develop} HEAD)
+    git rebase -i $(git merge-base ${1:-$(git remote)/staging} HEAD)
 }
 
 function l2g() {
@@ -159,14 +159,6 @@ function clean() {
     find . -name '.swp_emacs' -type d | xargs rm -rf
 }
 
-function noq() {
-    mongo <<EOF
-    use raise
-    db.queued_jobs.remove({});
-EOF
-    redis-cli flushdb
-}
-
 # Colorize man pages.
 # From the article http://boredzo.org/blog/archives/2016-08-15/colorized-man-pages-understood-and-customized
 man() {
@@ -181,38 +173,20 @@ man() {
             man "$@"
 }
 
-function mr() {
-    ssh llovett@`aws ec2 describe-instances --filter Name=tag:Name,Values=production-migration-runner | fgrep PrivateIpAddress | head -n 1 | grep --color=never -o '\(\d\+\.\)\{3\}\d\+'` "$*"
-}
-
-function mrcp() {
-    scp $1 llovett@`aws ec2 describe-instances --filter Name=tag:Name,Values=production-migration-runner | fgrep PrivateIpAddress | head -n 1 | grep --color=never -o '\(\d\+\.\)\{3\}\d\+'`:~/
-}
-
-function smrcp() {
-    scp $1 llovett@`aws ec2 describe-instances --filter Name=tag:Name,Values=staging-migration-runner | fgrep PrivateIpAddress | head -n 1 | grep --color=never -o '\(\d\+\.\)\{3\}\d\+'`:~/
-}
-
-function smr() {
-    ssh llovett@`aws ec2 describe-instances --filter Name=tag:Name,Values=staging-migration-runner | fgrep PrivateIpAddress | head -n 1 | grep --color=never -o '\(\d\+\.\)\{3\}\d\+'` "$*"
-}
+feature_branch_base=staging
 
 function cob() {
-    git checkout -b $1 ${2:-origin/main}
+    git checkout -b $1 ${2:-$(git remote)/${feature_branch_base}}
 }
 
 function gdd() {
-    git diff $(git merge-base ${1:-upstream/develop} HEAD)
+    git diff $(git merge-base ${1:-$(git remote)/${feature_branch_base}} HEAD)
 }
 
 function stats() {
-    git diff $(git merge-base ${1:-upstream/develop} HEAD) --stat
+    git diff $(git merge-base ${1:-$(git remote)/${feature_branch_base}} HEAD) --stat
 }
 
 function gddn() {
-    git diff --name-only $(git merge-base ${1:-upstream/develop} HEAD)
-}
-
-function bu() {
-    bundle update ${1:-raise-protobuf}
+    git diff --name-only $(git merge-base ${1:-$(git remote)/${feature_branch_base}} HEAD)
 }
