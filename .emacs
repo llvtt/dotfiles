@@ -97,6 +97,7 @@
          (web-mode . lsp)
          (python-mode . lsp)
          (sh-mode . lsp) ; https://github.com/bash-lsp/bash-language-server
+         (rust-mode . lsp)
          (go-mode . lsp))
   :config
   (setq

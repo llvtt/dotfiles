@@ -69,6 +69,9 @@ whence nodenv && {
   PATH="$HOME/.nodenv/shims:$PATH"
 }
 
+# Cargo
+PATH="$PATH:$HOME/.cargo/bin"
+
 # Homebrew
 export PATH="${PATH}:/opt/homebrew/bin"
 
