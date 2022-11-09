@@ -76,6 +76,8 @@
  '(smerge-markers ((t (:extend t :background "#363636"))))
  '(magit-section-highlight ((t (:inherit highlight))))
  '(tree-sitter-hl-face:function\.call ((t (:inherit (link font-lock-function-name-face) :foreground "plum2" :underline nil))))
- '(default ((t (:inherit nil :extend nil :stipple nil :foreground "#eae5d7" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 1 :width normal :foundry "default" :family "default")))))
+ '(default ((t (:inherit nil :extend nil :stipple nil :foreground "#eae5d7" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 1 :width normal :foundry "default" :family "default"))))
+ '(smerge-refined-added ((t (:inherit smerge-refined-change :weight ultra-bold))))
+ '(smerge-refined-removed ((t (:inherit smerge-refined-change :weight ultra-bold)))))
 
 (provide-theme 'umeboshi)

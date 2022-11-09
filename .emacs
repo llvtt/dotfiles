@@ -198,6 +198,8 @@
 	 (terraform-mode . dumb-jump-mode)
 	 )
   )
+(use-package hs
+  :hook ((python-mode . hs-minor-mode)))
 
 (defun company-mode/backend-with-yas (backend)
   (if (and (listp backend) (member 'company-yasnippet backend))
@@ -484,6 +486,11 @@
         ("<SPC>wes" . web-mode-surround)
         )
   )
+
+(use-package prettier-js
+  :hook ((web-mode . prettier-js-mode)
+         (js-mode . prettier-js-mode)))
+
 ;; (use-package tide
 ;;   :after
 ;;   (typescript-mode company flycheck)
@@ -538,13 +545,6 @@
    )
   )
 (use-package tree-sitter-langs)
-(use-package origami
-  :config (global-origami-mode 1)
-  :bind
-  (:map evil-normal-state-map
-        ("zu" . origami-undo)
-        )
-  )
 
 
 ;;;;;;;;;;;
@@ -599,6 +599,9 @@
 (evil-global-set-key 'normal "gb" 'xref-pop-marker-stack)
 (evil-global-set-key 'normal "gd" 'xref-find-definitions)
 (evil-global-set-key 'normal "gr" 'xref-find-references)
+
+;; vc
+(evil-global-set-key 'normal (kbd "<SPC>gg" ) 'vc-git-grep)
 
 ;; global hooks
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
