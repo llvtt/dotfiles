@@ -25,6 +25,15 @@
 (setq straight-use-package-by-default t)
 (setq package-enable-at-startup nil)
 
+;;;;;;;;;;;
+;; cmake ;;
+;;;;;;;;;;;
+
+(use-package cmake-font-lock
+  :straight (cmake-font-lock :type git :host github :repo "Lindydancer/cmake-font-lock"))
+(use-package cmake-build
+  :straight (cmake-build :type git :host github :repo "rpav/cmake-build.el"))
+
 ;;;;;;;;;;
 ;; evil ;;
 ;;;;;;;;;;
@@ -98,11 +107,16 @@
          (python-mode . lsp)
          (sh-mode . lsp) ; https://github.com/bash-lsp/bash-language-server
          (rust-mode . lsp)
+         ;; (terraform-mode . lsp) ; https://github.com/hashicorp/terraform-ls/blob/main/docs/installation.md
          (go-mode . lsp))
   :config
   (setq
    lsp-response-timeout 2
-   lsp-headerline-breadcrumb-icons-enable nil)
+   lsp-headerline-breadcrumb-icons-enable nil
+   ;; tuning parameters from https://emacs-lsp.github.io/lsp-mode/page/performance/
+   gc-cons-threshold 100000000
+   read-process-output-max (* 1024 1024)
+   )
   :bind
   (:map evil-normal-state-map
         ("<SPC>lr" . lsp-rename)
@@ -436,7 +450,8 @@
 
 (defun my-node_modules-flycheck-hook ()
   "Hook to help flycheck find node executables"
-  (setq-local flycheck-executable-find #'flycheck-node_modules-executable-find))
+  (setq-local flycheck-executable-find #'flycheck-node_modules-executable-find)
+  (setq-local prettier-js-command (flycheck-node_modules-executable-find "prettier")))
 
 ;; Based on:
 ;; - https://gist.github.com/blue0513/f503c26bf5cb8a1b6fb6e75f1ec91557
@@ -476,7 +491,9 @@
   (add-hook 'web-mode-hook
             (lambda()
               (add-hook 'after-save-hook 'eslint-fix-file nil t)
-              (add-hook 'lsp-ui-hook (lambda () (flycheck-add-next-checker 'lsp 'javascript-eslint)) 0 t)
+              ;; lsp just runs eslint, but it seems to do so with the wrong configuration sometimes.
+              ;; (add-hook 'lsp-ui-hook (lambda () (flycheck-add-next-checker 'lsp 'javascript-eslint)) 0 t)
+              (add-hook 'lsp-ui-hook (lambda () (flycheck-add-next-checker 'javascript-eslint)) 0 t)
               ))
   :bind
   (:map evil-normal-state-map
