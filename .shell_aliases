@@ -36,6 +36,7 @@ alias lla="ls -al"
 alias figrep="fgrep -i"
 alias mongop="psargs mongod ; psargs mongos"
 alias pythonp="psargs python"
+alias disco="python -m unittest discover"
 alias lastcom="git log --pretty=oneline -1"
 alias stash="git stash"
 alias gm="git merge"
@@ -137,8 +138,12 @@ function rot() {
     done
 }
 
+function default_branch() {
+    git remote show origin | sed -n '/HEAD branch/s/.*: //p'
+}
+
 function squash() {
-    git rebase -i $(git merge-base ${1:-$(git remote)/staging} HEAD)
+    git rebase -i $(git merge-base ${1:-origin/$(default_branch)} HEAD)
 }
 
 function l2g() {
@@ -173,20 +178,18 @@ man() {
             man "$@"
 }
 
-feature_branch_base=staging
-
 function cob() {
-    git checkout -b $1 ${2:-$(git remote)/${feature_branch_base}}
+    git checkout -b $1 ${2:-$(git remote)/$(default_branch)}
 }
 
 function gdd() {
-    git diff $(git merge-base ${1:-$(git remote)/${feature_branch_base}} HEAD)
+    git diff $(git merge-base ${1:-$(git remote)/$(default_branch)} HEAD)
 }
 
 function stats() {
-    git diff $(git merge-base ${1:-$(git remote)/${feature_branch_base}} HEAD) --stat
+    git diff $(git merge-base ${1:-$(git remote)/$(default_branch)} HEAD) --stat
 }
 
 function gddn() {
-    git diff --name-only $(git merge-base ${1:-$(git remote)/${feature_branch_base}} HEAD)
+    git diff --name-only $(git merge-base ${1:-$(git remote)/$(default_branch)} HEAD)
 }
