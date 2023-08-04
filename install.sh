@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Install dotfiles.
 # Run this in the project root.
@@ -13,6 +13,7 @@ dotfiles=(.zshrc\
               .iterm2_shell_integration.zsh\
               .shell_aliases\
               .shell_env\
+	      .terminfo\
          )
 
 install() {
@@ -32,7 +33,7 @@ uninstall() {
     for file in ${dotfiles[@]}; do
         rm -f $file
         if [ -x "${backup_directory}/${file}" ]; then
-            cp -f "${backup_directory}/${file}" $file
+            cp -rf "${backup_directory}/${file}" $file
         fi
     done
 }
