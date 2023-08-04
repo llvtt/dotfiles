@@ -96,48 +96,56 @@
   (setq
    evil-normal-state-cursor 'hbar)
   (unless (display-graphic-p) (evil-terminal-cursor-changer-activate)))
+(use-package evil-mc
+  :config
+  (global-evil-mc-mode 1)
+  :bind
+  (:map evil-normal-state-map
+        ("C-n" . evil-mc-make-and-goto-next-match)
+        ("C-p" . evil-mc-make-and-goto-prev-match)))
 
 ;;;;;;;;;
 ;; LSP ;;
 ;;;;;;;;;
 
-(use-package lsp-mode
-  :hook ((ruby-mode . lsp)
-         (web-mode . lsp)
-         (python-mode . lsp)
-         (sh-mode . lsp) ; https://github.com/bash-lsp/bash-language-server
-         (rust-mode . lsp)
-         ;; (terraform-mode . lsp) ; https://github.com/hashicorp/terraform-ls/blob/main/docs/installation.md
-         (go-mode . lsp))
-  :config
-  (setq
-   lsp-response-timeout 2
-   lsp-headerline-breadcrumb-icons-enable nil
-   ;; tuning parameters from https://emacs-lsp.github.io/lsp-mode/page/performance/
-   gc-cons-threshold 100000000
-   read-process-output-max (* 1024 1024)
-   )
-  :bind
-  (:map evil-normal-state-map
-        ("<SPC>lr" . lsp-rename)
-        ("<SPC>ll" . lsp-workspace-restart)
-        ("<SPC>la" . lsp-execute-code-action)
-        ))
 
-(use-package lsp-ui
+(use-package eglot
+  :config
+  (add-to-list 'eglot-server-programs '(web-mode . ("npx" "typescript-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs '(terraform-mode . ("terraform-ls" "serve")))
+  (setq
+   eglot-confirm-server-initiated-edits nil
+   eglot-connect-timeout 60
+   eglot-sync-connect nil
+   eglot-autoreconnect 5
+   eglot-send-changes-idle-time 0.25
+   )
+  (add-hook 'eglot-connect-hook (lambda (_server) (message "Eglot connected!")))
+  ;; these language servers are frankly quite useless due to lack of features
+  ;; they also seem to get confused by our terraform setup, which isn't like most terraform modules
+  ;; (add-to-list 'eglot-server-programs '(terraform-mode . ("terraform-ls" "serve")))
+  ;; (add-to-list 'eglot-server-programs '(terraform-mode . ("terraform-lsp" "-enable-log-file")))
   :bind
   (:map evil-normal-state-map
-        ("<SPC>li" . lsp-ui-imenu)
-        ("<SPC>lfr" . lsp-ui-peek-find-references)
-        ("<SPC>lfg" . lsp-find-references))
+        ("<SPC>lr" . eglot-rename)
+        ("<SPC>ll" . eglot-reconnect)
+        ("<SPC>la" . eglot-code-actions)
+        ("<SPC>ld" . eldoc-doc-buffer)
+        )
+  :hook
+  (
+   (ruby-mode . eglot-ensure)
+   (web-mode . eglot-ensure)
+   (go-mode . eglot-ensure)
+   ;; pip install 'python-language-server[all]'
+   (python-mode . eglot-ensure)
+   )
+  )
+(use-package flycheck-eglot
+  :ensure t
+  :after (flycheck eglot)
   :config
-  (add-hook 'lsp-ui-peek-mode-hook
-            (lambda ()
-              (evil-define-key nil lsp-ui-peek-mode-map (kbd "C-k") 'lsp-ui-peek--select-prev)
-              (evil-define-key nil lsp-ui-peek-mode-map (kbd "C-j") 'lsp-ui-peek--select-next)
-              (evil-define-key nil lsp-ui-peek-mode-map (kbd "M-k") 'lsp-ui-peek--select-prev-file)
-              (evil-define-key nil lsp-ui-peek-mode-map (kbd "M-j") 'lsp-ui-peek--select-next-file)
-              )))
+  (global-flycheck-eglot-mode 1))
 
 ;;;;;;;;;;;;;
 ;; graphql ;;
@@ -146,6 +154,33 @@
 (use-package request) ; dependency of emacs-graphql
 ; npm i graphql-language-service-cli
 (use-package graphql)
+
+;;;;;;;;;;;;;;;
+;; MODE LINE ;;
+;;;;;;;;;;;;;;;
+
+(use-package smart-mode-line
+  :init
+  (setq sml/theme 'respectful)
+  (sml/setup)
+  :config
+  (setq
+   sml/mule-info nil
+   sml/vc-mode-show-backend nil
+   sml/modified-char "δ"
+   sml/shorten-directory t
+   sml/shorten-modes t
+   sml/mode-width 40
+   sml/name-width 20
+   )
+  )
+(use-package rich-minority
+  :config
+  (setq rm-whitelist (format "^ \\(%s\\)$"
+                             (mapconcat #'identity
+                                        '("Fly.*" "Projectile.*" "Eglot.*" "Company.*" ".*Black.*")
+                                        "\\|")))
+  (rich-minority-mode 1))
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; general packages ;;
@@ -165,21 +200,6 @@
   :config
   (setq undo-tree-history-directory-alist
         '((".*" . "~/.emacs.d/backups")))
-  )
-
-;; TODO - this is broken under emacs 28:
-;; https://www.reddit.com/r/emacs/comments/kqb9s9/cannot_recompile_packagess_error_wrong_number_of/
-(use-package smart-mode-line
-  :init
-  (setq sml/theme 'respectful)
-  (sml/setup)
-  :config
-  (setq
-   sml/mule-info nil
-   sml/vc-mode-show-backend nil
-   sml/modified-char "δ"
-   sml/shorten-directory nil
-   )
   )
 
 (use-package yaml-mode)
@@ -288,14 +308,6 @@
 ;;;;;;;;;;;
 
 (use-package scala-mode)
-;; (use-package lsp-metals
-;;   :ensure t
-;;   :custom
-;;   ;; Metals claims to support range formatting by default but it supports range
-;;   ;; formatting of multiline strings only. You might want to disable it so that
-;;   ;; emacs can use indentation provided by scala-mode.
-;;   (lsp-metals-server-args '("-J-Dmetals.allow-multiline-string-formatting=off"))
-;;   :hook (scala-mode . lsp))
 
 ;;;;;;;;
 ;; go ;;
@@ -333,11 +345,6 @@
                                 ))
   )
 (use-package pyvenv)
-(use-package lsp-pyright
-  :ensure t
-  :hook (python-mode . (lambda ()
-                          (require 'lsp-pyright)
-                          (lsp))))
 (use-package python-black
   :demand t
   :after python
@@ -416,8 +423,6 @@
 
               (set (make-local-variable 'compilation-error-regexp-alist-alist)
                    (list (quote ('ruby-Test::Unit "^ *\\([^ (].*\\):\\([1-9][0-9]*\\):in " 1 2))))
-
-              (add-hook 'lsp-after-initialize-hook (lambda () (flycheck-add-next-checker 'lsp 'ruby-rubocop)) 0 t)
               ))
   :bind
   (:map evil-normal-state-map
@@ -491,9 +496,6 @@
   (add-hook 'web-mode-hook
             (lambda()
               (add-hook 'after-save-hook 'eslint-fix-file nil t)
-              ;; lsp just runs eslint, but it seems to do so with the wrong configuration sometimes.
-              ;; (add-hook 'lsp-ui-hook (lambda () (flycheck-add-next-checker 'lsp 'javascript-eslint)) 0 t)
-              (add-hook 'lsp-ui-hook (lambda () (flycheck-add-next-checker 'javascript-eslint)) 0 t)
               ))
   :bind
   (:map evil-normal-state-map
@@ -640,6 +642,8 @@
 (global-set-key (kbd "M-s M-o") 'occur-all-buffers)
 (global-set-key (kbd "C-x p") '(lambda () (interactive) (other-window -1)))
 (global-set-key (kbd "C-x 4 t") 'toggle-window-split)
+
+(global-set-key (kbd "C-c j") 'eshell)
 
 ;; aliases
 (defalias 'css 'custom-theme-visit-theme)
