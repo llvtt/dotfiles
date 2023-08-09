@@ -113,6 +113,7 @@
   :config
   (add-to-list 'eglot-server-programs '(web-mode . ("npx" "typescript-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(terraform-mode . ("terraform-ls" "serve")))
+  (add-to-list 'eglot-server-programs '(python-mode . ("pyright-langserver" "--stdio")))
   (setq
    eglot-confirm-server-initiated-edits nil
    eglot-connect-timeout 60
@@ -340,7 +341,7 @@
 (use-package python
   :config
   (add-hook 'python-mode-hook (lambda ()
-                                (setq fill-column 80)
+                                (setq fill-column 100)
                                 (display-fill-column-indicator-mode t)
                                 ))
   )
