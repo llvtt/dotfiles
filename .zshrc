@@ -57,12 +57,12 @@ function left_prompt() {
     status_symbol="$(last_status_symbol)"
     date_string="$(date +%T)"
     directory_string="$(short_pwd)"
-    echo "%{$(rgb 236 40 40)%}# [${date_string}] %{$(rgb 255 156 34)%}${directory_string} ${status_symbol} %{$FX[reset]%}"
+    echo "%{$(rgb 70 90 190)%}# [${date_string}] %{$(rgb 200 100 100)%}${directory_string} ${status_symbol} %{$FX[reset]%}"
 }
 
 setopt PROMPT_SUBST
 export PROMPT="\$(left_prompt)"
-export RPROMPT="\$(spotify_status)%{$(rgb 78 175 252)%}\$(show_gitbranch)%{$FX[reset]%}"
+export RPROMPT="\$(spotify_status)%{$(rgb 150 100 90)%}\$(show_gitbranch)%{$FX[reset]%}"
 
 setopt MENU_COMPLETE
 

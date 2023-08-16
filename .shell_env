@@ -70,6 +70,9 @@ whence nodenv && {
     eval "$(nodenv init -)"
 }
 
+# Doom
+PATH="$PATH:$HOME/.config/emacs/bin"
+
 # Cargo
 PATH="$PATH:$HOME/.cargo/bin"
 

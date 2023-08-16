@@ -94,7 +94,7 @@
 (use-package evil-terminal-cursor-changer
   :config
   (setq
-   evil-normal-state-cursor 'hbar)
+   evil-normal-state-cursor 'box)
   (unless (display-graphic-p) (evil-terminal-cursor-changer-activate)))
 (use-package evil-mc
   :config
@@ -109,44 +109,56 @@
 ;;;;;;;;;
 
 
-(use-package eglot
+(use-package lsp-mode
+  :hook ((ruby-mode . lsp)
+         (web-mode . lsp)
+         ;; (python-mode . lsp)
+         (sh-mode . lsp) ; https://github.com/bash-lsp/bash-language-server
+         (rust-mode . lsp)
+         ;; (terraform-mode . lsp) ; https://github.com/hashicorp/terraform-ls/blob/main/docs/installation.md
+         (go-mode . lsp))
   :config
-  (add-to-list 'eglot-server-programs '(web-mode . ("npx" "typescript-language-server" "--stdio")))
-  (add-to-list 'eglot-server-programs '(terraform-mode . ("terraform-ls" "serve")))
-  (add-to-list 'eglot-server-programs '(python-mode . ("pyright-langserver" "--stdio")))
+  (lsp-semantic-tokens-mode t)
   (setq
-   eglot-confirm-server-initiated-edits nil
-   eglot-connect-timeout 60
-   eglot-sync-connect nil
-   eglot-autoreconnect 5
-   eglot-send-changes-idle-time 0.25
+   lsp-response-timeout 2
+   ;; TODO: figure out what projects is causing lsp problems
+   lsp-auto-guess-root nil
+   lsp-headerline-breadcrumb-icons-enable nil
+   ;; tuning parameters from https://emacs-lsp.github.io/lsp-mode/page/performance/
+   gc-cons-threshold 100000000
+   read-process-output-max (* 1024 1024)
+   lsp-pylsp-plugins-rope-autoimport-enabled t
+   lsp-headerline-breadcrumb-enable nil
    )
-  (add-hook 'eglot-connect-hook (lambda (_server) (message "Eglot connected!")))
-  ;; these language servers are frankly quite useless due to lack of features
-  ;; they also seem to get confused by our terraform setup, which isn't like most terraform modules
-  ;; (add-to-list 'eglot-server-programs '(terraform-mode . ("terraform-ls" "serve")))
-  ;; (add-to-list 'eglot-server-programs '(terraform-mode . ("terraform-lsp" "-enable-log-file")))
+  (lsp-register-custom-settings
+   '(("pylsp.plugins.rope_autoimport.enabled" t t)))
+  ;; Ignore everything in site-packages.
+  ;; For some reason, lsp-mode has pyright watch everything in every virtualenv,
+  ;; which slows emacs down very significantly.
+  (add-to-list 'lsp-file-watch-ignored-directories "site-packages")
   :bind
   (:map evil-normal-state-map
-        ("<SPC>lr" . eglot-rename)
-        ("<SPC>ll" . eglot-reconnect)
-        ("<SPC>la" . eglot-code-actions)
-        ("<SPC>ld" . eldoc-doc-buffer)
-        )
-  :hook
-  (
-   (ruby-mode . eglot-ensure)
-   (web-mode . eglot-ensure)
-   (go-mode . eglot-ensure)
-   ;; pip install 'python-language-server[all]'
-   (python-mode . eglot-ensure)
-   )
-  )
-(use-package flycheck-eglot
-  :ensure t
-  :after (flycheck eglot)
+        ("<SPC>lr" . lsp-rename)
+        ("<SPC>ll" . lsp-workspace-restart)
+        ("<SPC>la" . lsp-execute-code-action)
+        ))
+
+
+(use-package lsp-ui
+  :bind
+  (:map evil-normal-state-map
+        ("<SPC>li" . lsp-ui-imenu)
+        ("<SPC>lfr" . lsp-ui-peek-find-references)
+        ("<SPC>lfg" . lsp-find-references))
   :config
-  (global-flycheck-eglot-mode 1))
+  (add-hook 'lsp-ui-peek-mode-hook
+            (lambda ()
+              (evil-define-key nil lsp-ui-peek-mode-map (kbd "C-k") 'lsp-ui-peek--select-prev)
+              (evil-define-key nil lsp-ui-peek-mode-map (kbd "C-j") 'lsp-ui-peek--select-next)
+              (evil-define-key nil lsp-ui-peek-mode-map (kbd "M-k") 'lsp-ui-peek--select-prev-file)
+              (evil-define-key nil lsp-ui-peek-mode-map (kbd "M-j") 'lsp-ui-peek--select-next-file)
+              )))
+
 
 ;;;;;;;;;;;;;
 ;; graphql ;;
@@ -156,10 +168,19 @@
 ; npm i graphql-language-service-cli
 (use-package graphql)
 
+
 ;;;;;;;;;;;;;;;
 ;; MODE LINE ;;
 ;;;;;;;;;;;;;;;
 
+(use-package rich-minority
+  :config
+  (unless rich-minority-mode (rich-minority-mode 1))
+  (setq rm-whitelist (format "^ \\(%s\\)$"
+                             (mapconcat #'identity
+                                        '("Fly.*" "Projectile.*" ".*Black.*" ".*Lsp.*")
+                                        "\\|")))
+  (rich-minority-mode 1))
 (use-package smart-mode-line
   :init
   (setq sml/theme 'respectful)
@@ -175,13 +196,7 @@
    sml/name-width 20
    )
   )
-(use-package rich-minority
-  :config
-  (setq rm-whitelist (format "^ \\(%s\\)$"
-                             (mapconcat #'identity
-                                        '("Fly.*" "Projectile.*" "Eglot.*" "Company.*" ".*Black.*")
-                                        "\\|")))
-  (rich-minority-mode 1))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; general packages ;;
@@ -208,6 +223,12 @@
 (use-package flycheck
   :config
   (global-flycheck-mode t)
+  :bind
+  (:map evil-normal-state-map
+        ("<SPC>en" . flycheck-next-error)
+        ("<SPC>ep" . flycheck-previous-error)
+        ("<SPC>el" . flycheck-list-errors)
+        )
   )
 (use-package string-inflection)
 (use-package yasnippet
@@ -289,6 +310,16 @@
   :config
   (add-hook 'company-mode-hook 'company-prescient-mode)
   )
+(use-package vertico
+  :init
+  (vertico-mode))
+(use-package orderless
+  :config
+  (setq
+   completion-styles '(orderless basic)
+   completion-category-overrides '((file (styles basic partial-completion)))
+   )
+  )
 
 ;;;;;;;;;;
 ;; rust ;;
@@ -346,6 +377,7 @@
                                 ))
   )
 (use-package pyvenv)
+;; todo - probably want to run black / isort in a specific order
 (use-package python-black
   :demand t
   :after python
@@ -357,6 +389,19 @@
   (:map evil-normal-state-map
         ("<SPC>ptf" . python-pytest-file)
         ("<SPC>pt." . python-pytest-function)))
+(use-package lsp-pyright
+  :config
+  (setq lsp-pyright-multi-root nil)
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-pyright)
+                         (lsp-deferred))))
+(use-package python-isort
+  :straight (:type git :host github :repo "wyuenho/emacs-python-isort")
+  :hook (python-mode . python-isort-on-save-mode)
+  )
+(use-package python-autoimport
+  :straight (:type git :host github :repo "llvtt/emacs-python-autoimport")
+  :hook (python-mode . python-autoimport-on-save-mode))
 
 ;;;;;;;;;;
 ;; ruby ;;
@@ -366,6 +411,8 @@
   :bind
   (:map evil-normal-state-map
         ("<SPC>rpf" . projectile-find-file)
+        ("<SPC>pf" . projectile-find-file)
+        ("<SPC>pof" . projectile-find-file-dwim-other-window)
         ("<f12>" . projectile-find-file)
         )
   )
@@ -511,20 +558,6 @@
   :hook ((web-mode . prettier-js-mode)
          (js-mode . prettier-js-mode)))
 
-;; (use-package tide
-;;   :after
-;;   (typescript-mode company flycheck)
-;;   :hook
-;;   (
-;;    (web-mode . tide-setup)
-;;    (before-save . tide-format-before-save)
-;;    )
-;;   :bind
-;;   (:map evil-normal-state-map
-;;         ("<SPC>tf" . tide-fix)
-;;         )
-;;   )
-
 ;;;;;;;;;;;;;;
 ;; mmm mode ;;
 ;;;;;;;;;;;;;;
@@ -549,9 +582,9 @@
             (when (string-match-p "\\.tsx?" buffer-file-name)
               (mmm-reapply))))
 
-;;;;;;;;;;;;;;;;;
-;; tree sitter ;;
-;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;; highlighting ;;
+;;;;;;;;;;;;;;;;;;
 
 (use-package tree-sitter
   :config
@@ -565,6 +598,14 @@
    )
   )
 (use-package tree-sitter-langs)
+(use-package hl-todo
+  :init
+  (global-hl-todo-mode t))
+(use-package diff-hl
+  :config
+  (diff-hl-flydiff-mode t)
+  (diff-hl-margin-mode t)
+  (global-diff-hl-mode t))
 
 
 ;;;;;;;;;;;
