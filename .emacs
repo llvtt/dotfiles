@@ -34,6 +34,15 @@
 (use-package cmake-build
   :straight (cmake-build :type git :host github :repo "rpav/cmake-build.el"))
 
+;;;;;;;;;;;
+;; c/c++ ;;
+;;;;;;;;;;;
+
+(use-package cc-mode
+  :config
+  (add-hook 'before-save-hook 'lsp-format-buffer)
+  )
+
 ;;;;;;;;;;
 ;; evil ;;
 ;;;;;;;;;;
@@ -115,6 +124,9 @@
          ;; (python-mode . lsp)
          (sh-mode . lsp) ; https://github.com/bash-lsp/bash-language-server
          (rust-mode . lsp)
+         ;; c/c++ rely on clangd and scripts to export compile_commands.json
+         (c-mode . lsp)
+         (c++-mode . lsp)
          ;; (terraform-mode . lsp) ; https://github.com/hashicorp/terraform-ls/blob/main/docs/installation.md
          (go-mode . lsp))
   :config
@@ -594,6 +606,7 @@
    (go-mode . tree-sitter-mode)
    (python-mode . tree-sitter-mode)
    (sh-mode . tree-sitter-mode)
+   (cc-mode . tree-sitter-mode)
    ;; need to make some adjustments to ruby syntax highlighting first before use there
    )
   )
@@ -684,6 +697,7 @@
 (global-set-key (kbd "M-s M-o") 'occur-all-buffers)
 (global-set-key (kbd "C-x p") '(lambda () (interactive) (other-window -1)))
 (global-set-key (kbd "C-x 4 t") 'toggle-window-split)
+(global-set-key (kbd "<f6>") 'revert-buffer)
 
 (global-set-key (kbd "C-c j") 'eshell)
 
