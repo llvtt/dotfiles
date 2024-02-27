@@ -28,6 +28,7 @@ export CARGO_NET_GIT_FETCH_WITH_CLI=true
 export PYTHONPATH="$PYTHONPATH:$HOME/local/python"
 export WINEPREFIX="${HOME}/.wine"
 export PGDATA='/usr/local/var/postgresql@11'
+export PIPX_BIN_DIR="$HOME/local/bin"
 # Uncomment this line to use us-west-1 for AWS:
 #export EC2_URL="https://ec2.us-west-1.amazonaws.com"
 # Uncomment this line to use us-east-1 for AWS:

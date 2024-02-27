@@ -127,7 +127,8 @@
          ;; c/c++ rely on clangd and scripts to export compile_commands.json
          (c-mode . lsp)
          (c++-mode . lsp)
-         ;; (terraform-mode . lsp) ; https://github.com/hashicorp/terraform-ls/blob/main/docs/installation.md
+         ;; TODO: experimental
+         (terraform-mode . lsp) ; https://github.com/hashicorp/terraform-ls/blob/main/docs/installation.md
          (go-mode . lsp))
   :config
   (lsp-semantic-tokens-mode t)
@@ -228,6 +229,7 @@
   :config
   (setq undo-tree-history-directory-alist
         '((".*" . "~/.emacs.d/backups")))
+  (add-hook 'evil-local-mode-hook 'turn-on-undo-tree-mode)
   )
 
 (use-package yaml-mode)
