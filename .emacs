@@ -29,8 +29,8 @@
 ;; cmake ;;
 ;;;;;;;;;;;
 
-(use-package cmake-font-lock
-  :straight (cmake-font-lock :type git :host github :repo "Lindydancer/cmake-font-lock"))
+;(use-package cmake-font-lock
+;  :straight (cmake-font-lock :type git :host github :repo "Lindydancer/cmake-font-lock"))
 (use-package cmake-build
   :straight (cmake-build :type git :host github :repo "rpav/cmake-build.el"))
 
@@ -38,9 +38,12 @@
 ;; c/c++ ;;
 ;;;;;;;;;;;
 
-(use-package cc-mode
+
+(use-package clang-format
+  :hook
+  ((c-mode cc-mode))
   :config
-  (add-hook 'before-save-hook 'lsp-format-buffer)
+  (clang-format-on-save-mode t)
   )
 
 ;;;;;;;;;;
@@ -110,6 +113,7 @@
   (global-evil-mc-mode 1)
   :bind
   (:map evil-normal-state-map
+        ;; g . q = evil-mc-undo-all-cursors
         ("C-n" . evil-mc-make-and-goto-next-match)
         ("C-p" . evil-mc-make-and-goto-prev-match)))
 
@@ -145,6 +149,7 @@
    )
   (lsp-register-custom-settings
    '(("pylsp.plugins.rope_autoimport.enabled" t t)))
+  (add-hook 'before-save-hook #'lsp-organize-imports)
   ;; Ignore everything in site-packages.
   ;; For some reason, lsp-mode has pyright watch everything in every virtualenv,
   ;; which slows emacs down very significantly.
@@ -237,6 +242,7 @@
 (use-package flycheck
   :config
   (global-flycheck-mode t)
+  (flycheck-add-mode 'javascript-eslint 'web-mode)
   :bind
   (:map evil-normal-state-map
         ("<SPC>en" . flycheck-next-error)
@@ -269,7 +275,8 @@
 	 )
   )
 (use-package hs
-  :hook ((python-mode . hs-minor-mode)))
+  :hook ((python-mode . hs-minor-mode)
+         (web-mode . hs-minor-mode)))
 
 (defun company-mode/backend-with-yas (backend)
   (if (and (listp backend) (member 'company-yasnippet backend))
@@ -535,6 +542,16 @@
       (message (format "eslint executable ‘%s’ not found" (or "" eslint))))
     ))
 
+(defvar-local my/flycheck-local-cache nil)
+
+;; Based on https://github.com/flycheck/flycheck/issues/1762#issuecomment-750458442
+;; linked from https://github.com/emacs-lsp/lsp-mode/discussions/3708
+(defun my/flycheck-checker-get (fn checker property)
+  (or (alist-get property (alist-get checker my/flycheck-local-cache))
+      (funcall fn checker property)))
+
+(advice-add 'flycheck-checker-get :around 'my/flycheck-checker-get)
+
 (use-package web-mode
   :init
   (add-to-list 'auto-mode-alist '("\\.jsx" . web-mode))
@@ -542,7 +559,6 @@
   (add-to-list 'auto-mode-alist '("\\.ts" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.js" . web-mode))
   :config
-  (flycheck-add-mode 'javascript-eslint 'web-mode)
   (setq
    web-mode-enable-auto-pairing t
    web-mode-enable-auto-expanding t
@@ -553,12 +569,21 @@
    web-mode-markup-indent-offset 2
    web-mode-css-indent-offset 2
    web-mode-content-types-alist '(("jsx" . ".*\\.js[x]?"))
+   ; prefer non-relative imports
+   lsp-javascript-preferences-import-module-specifier 2
    )
-  (add-hook 'web-mode-hook 'my-node_modules-flycheck-hook)
   (add-hook 'web-mode-hook
-            (lambda()
-              (add-hook 'after-save-hook 'eslint-fix-file nil t)
-              ))
+            (lambda ()
+              (with-eval-after-load 'flycheck
+                (with-eval-after-load 'lsp
+                  (flycheck-add-mode 'javascript-eslint 'web-mode)
+                  (setq-local flycheck-checker 'javascript-eslint)
+                  (flycheck-add-next-checker 'javascript-eslint 'lsp t)
+                ))))
+  (add-hook 'lsp-managed-mode-hook
+            (lambda ()
+              (when (derived-mode-p 'web-mode)
+                (setq my/flycheck-local-cache '((lsp . ((next-checkers . (javascript-eslint)))))))))
   :bind
   (:map evil-normal-state-map
         ("<SPC>wer" . web-mode-element-rename)
@@ -569,6 +594,13 @@
   )
 
 (use-package prettier-js
+  :init
+  (add-hook 'web-mode-hook 'my-node_modules-flycheck-hook)
+  (add-hook 'web-mode-hook
+            (lambda()
+              (message "web mode eslint fix hook applied")
+              (add-hook 'after-save-hook 'eslint-fix-file nil t)
+              ))
   :hook ((web-mode . prettier-js-mode)
          (js-mode . prettier-js-mode)))
 
@@ -600,19 +632,29 @@
 ;; highlighting ;;
 ;;;;;;;;;;;;;;;;;;
 
-(use-package tree-sitter
+; https://www.masteringemacs.org/article/how-to-get-started-tree-sitter
+(use-package treesit-auto
+  :init
+  (setq treesit-font-lock-level 4)
+  (setq treesit-language-source-alist
+        '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+          (cmake "https://github.com/uyha/tree-sitter-cmake")
+          (css "https://github.com/tree-sitter/tree-sitter-css")
+          (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+          (go "https://github.com/tree-sitter/tree-sitter-go")
+          (html "https://github.com/tree-sitter/tree-sitter-html")
+          (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+          (json "https://github.com/tree-sitter/tree-sitter-json")
+          (make "https://github.com/alemuller/tree-sitter-make")
+          (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+          (python "https://github.com/tree-sitter/tree-sitter-python")
+          (toml "https://github.com/tree-sitter/tree-sitter-toml")
+          (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+          (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+          (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
   :config
-  (add-hook 'tree-sitter-mode-hook 'tree-sitter-hl-mode)
-  :hook
-  (
-   (go-mode . tree-sitter-mode)
-   (python-mode . tree-sitter-mode)
-   (sh-mode . tree-sitter-mode)
-   (cc-mode . tree-sitter-mode)
-   ;; need to make some adjustments to ruby syntax highlighting first before use there
-   )
-  )
-(use-package tree-sitter-langs)
+  (global-treesit-auto-mode t))
+
 (use-package hl-todo
   :init
   (global-hl-todo-mode t))
@@ -681,6 +723,7 @@
 
 ;; global hooks
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+(add-hook 'compilation-mode-hook (lambda () (setq compilation-scroll-output t)))
 
 ;; key bindings
 (evil-global-set-key 'normal [mouse-4] '(lambda () (interactive) (scroll-down 1)))
@@ -702,6 +745,7 @@
 (global-set-key (kbd "<f6>") 'revert-buffer)
 
 (global-set-key (kbd "C-c j") 'eshell)
+(global-set-key (kbd "<f5>") 'compile)
 
 ;; aliases
 (defalias 'css 'custom-theme-visit-theme)

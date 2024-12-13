@@ -16,7 +16,7 @@
  '(trailing-whitespace ((((class color) (background light)) (:background "red1")) (((class color) (background dark)) (:background "red1")) (t (:inverse-video t))))
  '(font-lock-builtin-face ((t (:foreground "mediumpurple"))))
  '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
- '(font-lock-comment-face ((t (:foreground "gray25"))))
+ '(font-lock-comment-face ((t (:foreground "gray30"))))
  '(font-lock-constant-face ((t (:foreground "mediumpurple2"))))
  '(font-lock-doc-face ((t (:inherit (font-lock-string-face)))))
  '(font-lock-function-name-face ((t (:foreground "orange1" :slant italic))))
