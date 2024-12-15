@@ -125,7 +125,7 @@
 (use-package lsp-mode
   :hook ((ruby-mode . lsp)
          (web-mode . lsp)
-         ;; (python-mode . lsp)
+         (python-mode . lsp)
          (sh-mode . lsp) ; https://github.com/bash-lsp/bash-language-server
          (rust-mode . lsp)
          ;; c/c++ rely on clangd and scripts to export compile_commands.json
