@@ -124,7 +124,8 @@
 
 (use-package lsp-mode
   :hook ((ruby-mode . lsp)
-         (web-mode . lsp)
+         (typescript-ts-mode . lsp)
+         (tsx-ts-mode . lsp)
          (python-mode . lsp)
          (sh-mode . lsp) ; https://github.com/bash-lsp/bash-language-server
          (rust-mode . lsp)
@@ -137,6 +138,8 @@
   :config
   (lsp-semantic-tokens-mode t)
   (setq
+   ; prefer non-relative imports
+   lsp-javascript-preferences-import-module-specifier 2
    lsp-response-timeout 2
    ;; TODO: figure out what projects is causing lsp problems
    lsp-auto-guess-root nil
@@ -242,7 +245,6 @@
 (use-package flycheck
   :config
   (global-flycheck-mode t)
-  (flycheck-add-mode 'javascript-eslint 'web-mode)
   :bind
   (:map evil-normal-state-map
         ("<SPC>en" . flycheck-next-error)
@@ -270,13 +272,12 @@
   :hook ((ruby-mode . dumb-jump-mode)
 	 (python-mode . dumb-jump-mode)
 	 (js-mode . dumb-jump-mode)
-	 (web-mode . dumb-jump-mode)
 	 (terraform-mode . dumb-jump-mode)
 	 )
   )
 (use-package hs
   :hook ((python-mode . hs-minor-mode)
-         (web-mode . hs-minor-mode)))
+         (typescript-ts-base-mode . hs-minor-mode)))
 
 (defun company-mode/backend-with-yas (backend)
   (if (and (listp backend) (member 'company-yasnippet backend))
@@ -552,56 +553,15 @@
 
 (advice-add 'flycheck-checker-get :around 'my/flycheck-checker-get)
 
-(use-package web-mode
-  :init
-  (add-to-list 'auto-mode-alist '("\\.jsx" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.tsx" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.ts" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.js" . web-mode))
-  :config
-  (setq
-   web-mode-enable-auto-pairing t
-   web-mode-enable-auto-expanding t
-   web-mode-enable-auto-opening t
-   web-mode-enable-auto-closing t
-   web-mode-enable-auto-indentation t
-   web-mode-code-indent-offset 2
-   web-mode-markup-indent-offset 2
-   web-mode-css-indent-offset 2
-   web-mode-content-types-alist '(("jsx" . ".*\\.js[x]?"))
-   ; prefer non-relative imports
-   lsp-javascript-preferences-import-module-specifier 2
-   )
-  (add-hook 'web-mode-hook
-            (lambda ()
-              (with-eval-after-load 'flycheck
-                (with-eval-after-load 'lsp
-                  (flycheck-add-mode 'javascript-eslint 'web-mode)
-                  (setq-local flycheck-checker 'javascript-eslint)
-                  (flycheck-add-next-checker 'javascript-eslint 'lsp t)
-                ))))
-  (add-hook 'lsp-managed-mode-hook
-            (lambda ()
-              (when (derived-mode-p 'web-mode)
-                (setq my/flycheck-local-cache '((lsp . ((next-checkers . (javascript-eslint)))))))))
-  :bind
-  (:map evil-normal-state-map
-        ("<SPC>wer" . web-mode-element-rename)
-        ("<SPC>wek" . web-mode-element-kill)
-        ("<SPC>wec" . web-mode-element-close)
-        ("<SPC>wes" . web-mode-surround)
-        )
-  )
-
 (use-package prettier-js
   :init
-  (add-hook 'web-mode-hook 'my-node_modules-flycheck-hook)
-  (add-hook 'web-mode-hook
+  (add-hook 'typescript-ts-base-mode-hook 'my-node_modules-flycheck-hook)
+  (add-hook 'typescript-ts-base-mode-hook
             (lambda()
               (message "web mode eslint fix hook applied")
               (add-hook 'after-save-hook 'eslint-fix-file nil t)
               ))
-  :hook ((web-mode . prettier-js-mode)
+  :hook ((typescript-ts-base-mode . prettier-js-mode)
          (js-mode . prettier-js-mode)))
 
 ;;;;;;;;;;;;;;
@@ -617,7 +577,7 @@
       :submode graphql-mode
       :front "gr?a?p?h?ql`"
       :back "`;")))
-  (mmm-add-mode-ext-class 'web-mode nil 'mmm-graphql-mode))
+  (mmm-add-mode-ext-class 'typescript-ts-base-mode nil 'mmm-graphql-mode))
 
 (defun mmm-reapply ()
   (mmm-mode)
@@ -638,6 +598,8 @@
   (setq treesit-font-lock-level 4)
   (setq treesit-language-source-alist
         '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+          (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+          (c "https://github.com/tree-sitter/tree-sitter-c")
           (cmake "https://github.com/uyha/tree-sitter-cmake")
           (css "https://github.com/tree-sitter/tree-sitter-css")
           (elisp "https://github.com/Wilfred/tree-sitter-elisp")
@@ -653,7 +615,13 @@
           (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
           (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
   :config
-  (global-treesit-auto-mode t))
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode t)
+  ;; fix hooks
+  (setq python-ts-mode-hook python-mode-hook)
+  (setq c++-ts-mode-hook c++-mode-hook)
+  (setq c-ts-mode-hook c-mode-hook)
+  )
 
 (use-package hl-todo
   :init
