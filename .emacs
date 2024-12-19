@@ -29,10 +29,22 @@
 ;; cmake ;;
 ;;;;;;;;;;;
 
-(use-package cmake-font-lock
-  :straight (cmake-font-lock :type git :host github :repo "Lindydancer/cmake-font-lock"))
+;(use-package cmake-font-lock
+;  :straight (cmake-font-lock :type git :host github :repo "Lindydancer/cmake-font-lock"))
 (use-package cmake-build
   :straight (cmake-build :type git :host github :repo "rpav/cmake-build.el"))
+
+;;;;;;;;;;;
+;; c/c++ ;;
+;;;;;;;;;;;
+
+
+(use-package clang-format
+  :hook
+  ((c-mode cc-mode))
+  :config
+  (clang-format-on-save-mode t)
+  )
 
 ;;;;;;;;;;
 ;; evil ;;
@@ -94,35 +106,64 @@
 (use-package evil-terminal-cursor-changer
   :config
   (setq
-   evil-normal-state-cursor 'hbar)
+   evil-normal-state-cursor 'box)
   (unless (display-graphic-p) (evil-terminal-cursor-changer-activate)))
+(use-package evil-mc
+  :config
+  (global-evil-mc-mode 1)
+  :bind
+  (:map evil-normal-state-map
+        ;; g . q = evil-mc-undo-all-cursors
+        ("C-n" . evil-mc-make-and-goto-next-match)
+        ("C-p" . evil-mc-make-and-goto-prev-match)))
 
 ;;;;;;;;;
 ;; LSP ;;
 ;;;;;;;;;
 
+
 (use-package lsp-mode
   :hook ((ruby-mode . lsp)
-         (web-mode . lsp)
+         (typescript-ts-mode . lsp)
+         (tsx-ts-mode . lsp)
          (python-mode . lsp)
          (sh-mode . lsp) ; https://github.com/bash-lsp/bash-language-server
          (rust-mode . lsp)
-         ;; (terraform-mode . lsp) ; https://github.com/hashicorp/terraform-ls/blob/main/docs/installation.md
+         ;; c/c++ rely on clangd and scripts to export compile_commands.json
+         (c-mode . lsp)
+         (c++-mode . lsp)
+         ;; TODO: experimental
+         (terraform-mode . lsp) ; https://github.com/hashicorp/terraform-ls/blob/main/docs/installation.md
          (go-mode . lsp))
   :config
+  (lsp-semantic-tokens-mode t)
   (setq
+   ; prefer non-relative imports
+   lsp-javascript-preferences-import-module-specifier 2
    lsp-response-timeout 2
+   ;; TODO: figure out what projects is causing lsp problems
+   lsp-auto-guess-root nil
    lsp-headerline-breadcrumb-icons-enable nil
    ;; tuning parameters from https://emacs-lsp.github.io/lsp-mode/page/performance/
    gc-cons-threshold 100000000
    read-process-output-max (* 1024 1024)
+   lsp-pylsp-plugins-rope-autoimport-enabled t
+   lsp-headerline-breadcrumb-enable nil
    )
+  (lsp-register-custom-settings
+   '(("pylsp.plugins.rope_autoimport.enabled" t t)))
+  (add-hook 'before-save-hook #'lsp-organize-imports)
+  ;; Ignore everything in site-packages.
+  ;; For some reason, lsp-mode has pyright watch everything in every virtualenv,
+  ;; which slows emacs down very significantly.
+  (add-to-list 'lsp-file-watch-ignored-directories "site-packages")
   :bind
   (:map evil-normal-state-map
         ("<SPC>lr" . lsp-rename)
         ("<SPC>ll" . lsp-workspace-restart)
         ("<SPC>la" . lsp-execute-code-action)
         ))
+
 
 (use-package lsp-ui
   :bind
@@ -139,6 +180,7 @@
               (evil-define-key nil lsp-ui-peek-mode-map (kbd "M-j") 'lsp-ui-peek--select-next-file)
               )))
 
+
 ;;;;;;;;;;;;;
 ;; graphql ;;
 ;;;;;;;;;;;;;
@@ -146,6 +188,36 @@
 (use-package request) ; dependency of emacs-graphql
 ; npm i graphql-language-service-cli
 (use-package graphql)
+
+
+;;;;;;;;;;;;;;;
+;; MODE LINE ;;
+;;;;;;;;;;;;;;;
+
+(use-package rich-minority
+  :config
+  (unless rich-minority-mode (rich-minority-mode 1))
+  (setq rm-whitelist (format "^ \\(%s\\)$"
+                             (mapconcat #'identity
+                                        '("Fly.*" "Projectile.*" ".*Black.*" ".*Lsp.*")
+                                        "\\|")))
+  (rich-minority-mode 1))
+(use-package smart-mode-line
+  :init
+  (setq sml/theme 'respectful)
+  (sml/setup)
+  :config
+  (setq
+   sml/mule-info nil
+   sml/vc-mode-show-backend nil
+   sml/modified-char "δ"
+   sml/shorten-directory t
+   sml/shorten-modes t
+   sml/mode-width 40
+   sml/name-width 20
+   )
+  )
+
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; general packages ;;
@@ -165,21 +237,7 @@
   :config
   (setq undo-tree-history-directory-alist
         '((".*" . "~/.emacs.d/backups")))
-  )
-
-;; TODO - this is broken under emacs 28:
-;; https://www.reddit.com/r/emacs/comments/kqb9s9/cannot_recompile_packagess_error_wrong_number_of/
-(use-package smart-mode-line
-  :init
-  (setq sml/theme 'respectful)
-  (sml/setup)
-  :config
-  (setq
-   sml/mule-info nil
-   sml/vc-mode-show-backend nil
-   sml/modified-char "δ"
-   sml/shorten-directory nil
-   )
+  (add-hook 'evil-local-mode-hook 'turn-on-undo-tree-mode)
   )
 
 (use-package yaml-mode)
@@ -187,6 +245,12 @@
 (use-package flycheck
   :config
   (global-flycheck-mode t)
+  :bind
+  (:map evil-normal-state-map
+        ("<SPC>en" . flycheck-next-error)
+        ("<SPC>ep" . flycheck-previous-error)
+        ("<SPC>el" . flycheck-list-errors)
+        )
   )
 (use-package string-inflection)
 (use-package yasnippet
@@ -208,12 +272,12 @@
   :hook ((ruby-mode . dumb-jump-mode)
 	 (python-mode . dumb-jump-mode)
 	 (js-mode . dumb-jump-mode)
-	 (web-mode . dumb-jump-mode)
 	 (terraform-mode . dumb-jump-mode)
 	 )
   )
 (use-package hs
-  :hook ((python-mode . hs-minor-mode)))
+  :hook ((python-mode . hs-minor-mode)
+         (typescript-ts-base-mode . hs-minor-mode)))
 
 (defun company-mode/backend-with-yas (backend)
   (if (and (listp backend) (member 'company-yasnippet backend))
@@ -268,6 +332,16 @@
   :config
   (add-hook 'company-mode-hook 'company-prescient-mode)
   )
+(use-package vertico
+  :init
+  (vertico-mode))
+(use-package orderless
+  :config
+  (setq
+   completion-styles '(orderless basic)
+   completion-category-overrides '((file (styles basic partial-completion)))
+   )
+  )
 
 ;;;;;;;;;;
 ;; rust ;;
@@ -288,14 +362,6 @@
 ;;;;;;;;;;;
 
 (use-package scala-mode)
-;; (use-package lsp-metals
-;;   :ensure t
-;;   :custom
-;;   ;; Metals claims to support range formatting by default but it supports range
-;;   ;; formatting of multiline strings only. You might want to disable it so that
-;;   ;; emacs can use indentation provided by scala-mode.
-;;   (lsp-metals-server-args '("-J-Dmetals.allow-multiline-string-formatting=off"))
-;;   :hook (scala-mode . lsp))
 
 ;;;;;;;;
 ;; go ;;
@@ -328,16 +394,12 @@
 (use-package python
   :config
   (add-hook 'python-mode-hook (lambda ()
-                                (setq fill-column 80)
+                                (setq fill-column 100)
                                 (display-fill-column-indicator-mode t)
                                 ))
   )
 (use-package pyvenv)
-(use-package lsp-pyright
-  :ensure t
-  :hook (python-mode . (lambda ()
-                          (require 'lsp-pyright)
-                          (lsp))))
+;; todo - probably want to run black / isort in a specific order
 (use-package python-black
   :demand t
   :after python
@@ -349,6 +411,19 @@
   (:map evil-normal-state-map
         ("<SPC>ptf" . python-pytest-file)
         ("<SPC>pt." . python-pytest-function)))
+(use-package lsp-pyright
+  :config
+  (setq lsp-pyright-multi-root nil)
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-pyright)
+                         (lsp-deferred))))
+(use-package python-isort
+  :straight (:type git :host github :repo "wyuenho/emacs-python-isort")
+  :hook (python-mode . python-isort-on-save-mode)
+  )
+(use-package python-autoimport
+  :straight (:type git :host github :repo "llvtt/emacs-python-autoimport")
+  :hook (python-mode . python-autoimport-on-save-mode))
 
 ;;;;;;;;;;
 ;; ruby ;;
@@ -358,6 +433,8 @@
   :bind
   (:map evil-normal-state-map
         ("<SPC>rpf" . projectile-find-file)
+        ("<SPC>pf" . projectile-find-file)
+        ("<SPC>pof" . projectile-find-file-dwim-other-window)
         ("<f12>" . projectile-find-file)
         )
   )
@@ -416,8 +493,6 @@
 
               (set (make-local-variable 'compilation-error-regexp-alist-alist)
                    (list (quote ('ruby-Test::Unit "^ *\\([^ (].*\\):\\([1-9][0-9]*\\):in " 1 2))))
-
-              (add-hook 'lsp-after-initialize-hook (lambda () (flycheck-add-next-checker 'lsp 'ruby-rubocop)) 0 t)
               ))
   :bind
   (:map evil-normal-state-map
@@ -468,59 +543,26 @@
       (message (format "eslint executable ‘%s’ not found" (or "" eslint))))
     ))
 
-(use-package web-mode
-  :init
-  (add-to-list 'auto-mode-alist '("\\.jsx" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.tsx" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.ts" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.js" . web-mode))
-  :config
-  (flycheck-add-mode 'javascript-eslint 'web-mode)
-  (setq
-   web-mode-enable-auto-pairing t
-   web-mode-enable-auto-expanding t
-   web-mode-enable-auto-opening t
-   web-mode-enable-auto-closing t
-   web-mode-enable-auto-indentation t
-   web-mode-code-indent-offset 2
-   web-mode-markup-indent-offset 2
-   web-mode-css-indent-offset 2
-   web-mode-content-types-alist '(("jsx" . ".*\\.js[x]?"))
-   )
-  (add-hook 'web-mode-hook 'my-node_modules-flycheck-hook)
-  (add-hook 'web-mode-hook
-            (lambda()
-              (add-hook 'after-save-hook 'eslint-fix-file nil t)
-              ;; lsp just runs eslint, but it seems to do so with the wrong configuration sometimes.
-              ;; (add-hook 'lsp-ui-hook (lambda () (flycheck-add-next-checker 'lsp 'javascript-eslint)) 0 t)
-              (add-hook 'lsp-ui-hook (lambda () (flycheck-add-next-checker 'javascript-eslint)) 0 t)
-              ))
-  :bind
-  (:map evil-normal-state-map
-        ("<SPC>wer" . web-mode-element-rename)
-        ("<SPC>wek" . web-mode-element-kill)
-        ("<SPC>wec" . web-mode-element-close)
-        ("<SPC>wes" . web-mode-surround)
-        )
-  )
+(defvar-local my/flycheck-local-cache nil)
+
+;; Based on https://github.com/flycheck/flycheck/issues/1762#issuecomment-750458442
+;; linked from https://github.com/emacs-lsp/lsp-mode/discussions/3708
+(defun my/flycheck-checker-get (fn checker property)
+  (or (alist-get property (alist-get checker my/flycheck-local-cache))
+      (funcall fn checker property)))
+
+(advice-add 'flycheck-checker-get :around 'my/flycheck-checker-get)
 
 (use-package prettier-js
-  :hook ((web-mode . prettier-js-mode)
+  :init
+  (add-hook 'typescript-ts-base-mode-hook 'my-node_modules-flycheck-hook)
+  (add-hook 'typescript-ts-base-mode-hook
+            (lambda()
+              (message "web mode eslint fix hook applied")
+              (add-hook 'after-save-hook 'eslint-fix-file nil t)
+              ))
+  :hook ((typescript-ts-base-mode . prettier-js-mode)
          (js-mode . prettier-js-mode)))
-
-;; (use-package tide
-;;   :after
-;;   (typescript-mode company flycheck)
-;;   :hook
-;;   (
-;;    (web-mode . tide-setup)
-;;    (before-save . tide-format-before-save)
-;;    )
-;;   :bind
-;;   (:map evil-normal-state-map
-;;         ("<SPC>tf" . tide-fix)
-;;         )
-;;   )
 
 ;;;;;;;;;;;;;;
 ;; mmm mode ;;
@@ -535,7 +577,7 @@
       :submode graphql-mode
       :front "gr?a?p?h?ql`"
       :back "`;")))
-  (mmm-add-mode-ext-class 'web-mode nil 'mmm-graphql-mode))
+  (mmm-add-mode-ext-class 'typescript-ts-base-mode nil 'mmm-graphql-mode))
 
 (defun mmm-reapply ()
   (mmm-mode)
@@ -546,22 +588,49 @@
             (when (string-match-p "\\.tsx?" buffer-file-name)
               (mmm-reapply))))
 
-;;;;;;;;;;;;;;;;;
-;; tree sitter ;;
-;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;; highlighting ;;
+;;;;;;;;;;;;;;;;;;
 
-(use-package tree-sitter
+; https://www.masteringemacs.org/article/how-to-get-started-tree-sitter
+(use-package treesit-auto
+  :init
+  (setq treesit-font-lock-level 4)
+  (setq treesit-language-source-alist
+        '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+          (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+          (c "https://github.com/tree-sitter/tree-sitter-c")
+          (cmake "https://github.com/uyha/tree-sitter-cmake")
+          (css "https://github.com/tree-sitter/tree-sitter-css")
+          (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+          (go "https://github.com/tree-sitter/tree-sitter-go")
+          (html "https://github.com/tree-sitter/tree-sitter-html")
+          (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+          (json "https://github.com/tree-sitter/tree-sitter-json")
+          (make "https://github.com/alemuller/tree-sitter-make")
+          (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+          (python "https://github.com/tree-sitter/tree-sitter-python")
+          (toml "https://github.com/tree-sitter/tree-sitter-toml")
+          (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+          (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+          (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
   :config
-  (add-hook 'tree-sitter-mode-hook 'tree-sitter-hl-mode)
-  :hook
-  (
-   (go-mode . tree-sitter-mode)
-   (python-mode . tree-sitter-mode)
-   (sh-mode . tree-sitter-mode)
-   ;; need to make some adjustments to ruby syntax highlighting first before use there
-   )
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode t)
+  ;; fix hooks
+  (setq python-ts-mode-hook python-mode-hook)
+  (setq c++-ts-mode-hook c++-mode-hook)
+  (setq c-ts-mode-hook c-mode-hook)
   )
-(use-package tree-sitter-langs)
+
+(use-package hl-todo
+  :init
+  (global-hl-todo-mode t))
+(use-package diff-hl
+  :config
+  (diff-hl-flydiff-mode t)
+  (diff-hl-margin-mode t)
+  (global-diff-hl-mode t))
 
 
 ;;;;;;;;;;;
@@ -622,6 +691,7 @@
 
 ;; global hooks
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+(add-hook 'compilation-mode-hook (lambda () (setq compilation-scroll-output t)))
 
 ;; key bindings
 (evil-global-set-key 'normal [mouse-4] '(lambda () (interactive) (scroll-down 1)))
@@ -640,6 +710,10 @@
 (global-set-key (kbd "M-s M-o") 'occur-all-buffers)
 (global-set-key (kbd "C-x p") '(lambda () (interactive) (other-window -1)))
 (global-set-key (kbd "C-x 4 t") 'toggle-window-split)
+(global-set-key (kbd "<f6>") 'revert-buffer)
+
+(global-set-key (kbd "C-c j") 'eshell)
+(global-set-key (kbd "<f5>") 'compile)
 
 ;; aliases
 (defalias 'css 'custom-theme-visit-theme)

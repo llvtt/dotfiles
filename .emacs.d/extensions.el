@@ -87,7 +87,8 @@ STR is current-kill if unspecified.
   (interactive)
   (if (region-active-p)
       (comment-or-uncomment-region (region-beginning) (region-end))
-    (comment-or-uncomment-region (line-beginning-position) (line-end-position))))
+    (comment-or-uncomment-region (line-beginning-position) (line-end-position))
+    (next-line 1)))
 
 (defun aggressive-indent ()
   (interactive)
