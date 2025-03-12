@@ -414,8 +414,6 @@
         ("<SPC>ptf" . python-pytest-file)
         ("<SPC>pt." . python-pytest-function)))
 (use-package lsp-pyright
-  :config
-  (setq lsp-pyright-multi-root nil)
   :hook (python-mode . (lambda ()
                          (require 'lsp-pyright)
                          (lsp-deferred))))
