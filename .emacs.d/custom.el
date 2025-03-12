@@ -15,7 +15,8 @@
  '(js-indent-level 2)
  '(projectile-mode t)
  '(safe-local-variable-values
-   '((js-indent-level . 4)
+   '((lsp-file-watch-ignored "/build-web" "/build-native" "/build-embedded" "/plc" "/external" "/\\.git-untracked" "/\\.venv")
+     (js-indent-level . 4)
      (web-mode-indent-style . 2)
      (web-mode-indent-style . 4)))
  '(show-paren-mode t)

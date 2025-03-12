@@ -141,22 +141,20 @@
    ; prefer non-relative imports
    lsp-javascript-preferences-import-module-specifier 2
    lsp-response-timeout 2
-   ;; TODO: figure out what projects is causing lsp problems
-   lsp-auto-guess-root nil
    lsp-headerline-breadcrumb-icons-enable nil
    ;; tuning parameters from https://emacs-lsp.github.io/lsp-mode/page/performance/
    gc-cons-threshold 100000000
    read-process-output-max (* 1024 1024)
    lsp-pylsp-plugins-rope-autoimport-enabled t
    lsp-headerline-breadcrumb-enable nil
+   ;; typescript
+   lsp-typescript-preferences-import-module-specifier "non-relative"
+   lsp-javascript-preferences-import-module-specifier "non-relative"
    )
+  (add-to-list 'lsp-file-watch-ignored-directories "/\\.node_modules")
   (lsp-register-custom-settings
    '(("pylsp.plugins.rope_autoimport.enabled" t t)))
-  (add-hook 'before-save-hook #'lsp-organize-imports)
-  ;; Ignore everything in site-packages.
-  ;; For some reason, lsp-mode has pyright watch everything in every virtualenv,
-  ;; which slows emacs down very significantly.
-  (add-to-list 'lsp-file-watch-ignored-directories "site-packages")
+  ;; (add-hook 'before-save-hook #'lsp-organize-imports)
   :bind
   (:map evil-normal-state-map
         ("<SPC>lr" . lsp-rename)
@@ -195,13 +193,13 @@
 ;;;;;;;;;;;;;;;
 
 (use-package rich-minority
+  :defer nil
   :config
   (unless rich-minority-mode (rich-minority-mode 1))
   (setq rm-whitelist (format "^ \\(%s\\)$"
                              (mapconcat #'identity
                                         '("Fly.*" "Projectile.*" ".*Black.*" ".*Lsp.*")
-                                        "\\|")))
-  (rich-minority-mode 1))
+                                        "\\|"))))
 (use-package smart-mode-line
   :init
   (setq sml/theme 'respectful)
@@ -245,8 +243,12 @@
 (use-package flycheck
   :config
   (global-flycheck-mode t)
+  ;; https://github.com/mantoni/eslint_d.js#linting
+  (setq flycheck-javascript-eslint-executable "eslint_d")
   :bind
   (:map evil-normal-state-map
+        ("<f3>" . flycheck-next-error)
+        ("<f2>" . flycheck-previous-error)
         ("<SPC>en" . flycheck-next-error)
         ("<SPC>ep" . flycheck-previous-error)
         ("<SPC>el" . flycheck-list-errors)
@@ -436,6 +438,7 @@
         ("<SPC>pf" . projectile-find-file)
         ("<SPC>pof" . projectile-find-file-dwim-other-window)
         ("<f12>" . projectile-find-file)
+        ("C-<f12>" . projectile-find-file-other-window)
         )
   )
 (use-package projectile-rails
@@ -513,6 +516,9 @@
 ;; web ;;
 ;;;;;;;;;
 
+(use-package eslintd-fix
+  :hook typescript-ts-base-mode)
+
 ;; https://github.com/flycheck/flycheck/issues/1428#issuecomment-591320954
 (defun flycheck-node_modules-executable-find (executable)
   "Find npx binary in node_modules or globally for use with flycheck"
@@ -528,21 +534,6 @@
   (setq-local flycheck-executable-find #'flycheck-node_modules-executable-find)
   (setq-local prettier-js-command (flycheck-node_modules-executable-find "prettier")))
 
-;; Based on:
-;; - https://gist.github.com/blue0513/f503c26bf5cb8a1b6fb6e75f1ec91557
-;; - https://github.com/codesuki/eslint-fix/blob/master/eslint-fix.el
-(defun eslint-fix-file ()
-  "Run eslint --fix on the current file"
-  (interactive)
-  (when (buffer-modified-p) (save-buffer))
-  (let* ((eslint (flycheck-node_modules-executable-find "eslint")))
-    (if eslint
-        (progn
-          (apply #'call-process eslint nil "*ESLint Errors*" nil (list "--fix" (buffer-file-name)))
-          (revert-buffer t t t))
-      (message (format "eslint executable ‘%s’ not found" (or "" eslint))))
-    ))
-
 (defvar-local my/flycheck-local-cache nil)
 
 ;; Based on https://github.com/flycheck/flycheck/issues/1762#issuecomment-750458442
@@ -556,13 +547,19 @@
 (use-package prettier-js
   :init
   (add-hook 'typescript-ts-base-mode-hook 'my-node_modules-flycheck-hook)
-  (add-hook 'typescript-ts-base-mode-hook
-            (lambda()
-              (message "web mode eslint fix hook applied")
-              (add-hook 'after-save-hook 'eslint-fix-file nil t)
-              ))
   :hook ((typescript-ts-base-mode . prettier-js-mode)
          (js-mode . prettier-js-mode)))
+
+(use-package jest-test-mode
+  :commands jest-test-mode
+  :hook (typescript-ts-base-mode js-mode))
+
+;; (use-package dap-mode
+;;   :init
+;;   (require dap-node)
+;;   (dap-node-setup)
+;;   (add-hook 'typescript-ts-base-mode-hook (lambda () (require 'dap-node)))
+;;   )
 
 ;;;;;;;;;;;;;;
 ;; mmm mode ;;
@@ -658,6 +655,8 @@
  auto-save-file-name-transforms `((".*" ,temporary-file-directory t))
  ;; eldoc
  eldoc-echo-area-prefer-doc-buffer t
+ ;; follow vc symlinks always
+ vc-follow-symlinks t
  )
 (xterm-mouse-mode t)
 (show-paren-mode t)
