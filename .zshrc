@@ -17,30 +17,15 @@ function short_pwd() {
 }
 
 function show_gitbranch() {
-    branch=$(git branch 2>/dev/null | grep -F --color=never '* ' | sed 's/\* *//g')
+    branch=$(git branch --show-current)
     if [ ! -z "$branch" ]; then
         str="$branch"
-        if [ `git diff 2>/dev/null | wc -l 2>/dev/null` -gt 0 ]; then
-            str="${str}*"
+        if git update-index -q --ignore-submodules --refresh && git diff-files --quiet --ignore-submodules; then
+            echo "($branch)"
+        else
+            echo "(${branch}*)"
         fi
-        echo "($str)"
     fi
-}
-
-function spotify_status() {
-    if [ "$SPOTIFY_PROMPT" = "" ]; then
-        return
-    fi
-    output=$(spotify status 2>&1)
-    song=$(echo $output | head -n 1 | tr -d '🎤🎵\r' | sed -e 's/^ *//' -e 's/ *$//')
-    if [ "$(echo $song | wc -m)" -gt 20 ]; then
-        song="$(echo $song | cut -c1-20)…"
-    fi
-    artist=$(echo $output | head -n 2 | tail -1 | tr -d '🎤🎵\r' | sed -e 's/^ *//' -e 's/ *$//')
-    if [ "$(echo $artist | wc -m)" -gt 15 ]; then
-        artist="$(echo $artist | cut -c1-15)…"
-    fi
-    echo "🎵 ${song} by 🎤 ${artist}"
 }
 
 function last_status_symbol() {
@@ -62,7 +47,7 @@ function left_prompt() {
 
 setopt PROMPT_SUBST
 export PROMPT="\$(left_prompt)"
-export RPROMPT="\$(spotify_status)%{$(rgb 150 100 90)%}\$(show_gitbranch)%{$FX[reset]%}"
+export RPROMPT="%{$(rgb 150 100 90)%}\$(show_gitbranch)%{$FX[reset]%}"
 
 setopt MENU_COMPLETE
 
